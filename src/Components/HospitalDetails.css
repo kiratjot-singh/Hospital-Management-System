@@ -1,0 +1,127 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.hospital-page {
+  min-height: 100vh;
+  background-color: #E8F7F9;
+  padding: 32px;
+}
+
+.hospital-hero {
+  background: white;
+  border-radius: 28px;
+  padding: 32px;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 28px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+}
+
+.hero-left h1 {
+  font-size: 2rem;
+  color: #124F68;
+  margin-bottom: 8px;
+}
+
+.location {
+  font-size: 0.95rem;
+  color: #6A7A86;
+  margin-bottom: 6px;
+}
+
+.rating {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #58A7CA;
+  margin-bottom: 14px;
+}
+
+.desc {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #35566B;
+}
+
+.hero-right img {
+  width: 100%;
+  height: 100%;
+  border-radius: 22px;
+  object-fit: cover;
+}
+
+.departments-section {
+  margin-top: 36px;
+}
+
+.departments-section h2 {
+  font-size: 1.6rem;
+  color: #124F68;
+  margin-bottom: 18px;
+}
+
+.departments-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.dept-card {
+  background: white;
+  border-radius: 22px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dept-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+.dept-icon {
+  font-size: 2rem;
+}
+
+.dept-card span {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #124F68;
+}
+
+@media (max-width: 1024px) {
+  .hospital-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .departments-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .hospital-page {
+    padding: 16px;
+  }
+
+  .hospital-hero {
+    padding: 22px;
+  }
+
+  .hero-left h1 {
+    font-size: 1.6rem;
+  }
+
+  .departments-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+

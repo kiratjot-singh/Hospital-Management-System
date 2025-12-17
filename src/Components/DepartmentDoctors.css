@@ -1,0 +1,143 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.doctors-page {
+  min-height: 100vh;
+  background-color: #E8F7F9;
+  padding: 32px;
+}
+
+.dept-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.dept-header h1 {
+  font-size: 2rem;
+  color: #124F68;
+  margin-bottom: 6px;
+}
+
+.dept-header p {
+  font-size: 0.95rem;
+  color: #6A7A86;
+}
+
+.doctors-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.doctor-card {
+  background: white;
+  border-radius: 26px;
+  padding: 22px;
+  display: flex;
+  gap: 18px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.doctor-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.12);
+}
+
+.doctor-card img {
+  width: 96px;
+  height: 96px;
+  border-radius: 18px;
+  object-fit: cover;
+}
+
+.doctor-info {
+  flex: 1;
+}
+
+.doctor-info h3 {
+  font-size: 1.05rem;
+  color: #124F68;
+  margin-bottom: 4px;
+}
+
+.qualification {
+  font-size: 0.85rem;
+  color: #35566B;
+}
+
+.experience {
+  font-size: 0.8rem;
+  color: #6A7A86;
+  margin: 4px 0 10px;
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.fees {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #58A7CA;
+}
+
+.available {
+  font-size: 0.75rem;
+  color: #6A7A86;
+}
+
+.book-btn {
+  background-color: #58A7CA;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.book-btn:hover {
+  background-color: #4A94B5;
+  box-shadow: 0 6px 16px rgba(88, 167, 202, 0.4);
+}
+
+@media (max-width: 1024px) {
+  .doctors-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .doctors-page {
+    padding: 16px;
+  }
+
+  .doctors-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .doctor-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .doctor-card img {
+    width: 110px;
+    height: 110px;
+  }
+
+  .meta {
+    align-items: center;
+  }
+}
