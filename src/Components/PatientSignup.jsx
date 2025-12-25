@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useNavigate,Links, Link } from "react-router-dom";
+import axios from "axios"
 import "./PatientLogin.css";
 
 const PatientSignup = () => {
@@ -6,37 +8,53 @@ const PatientSignup = () => {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPwd, setConfirmPwd] = useState("");
+  const [mesg, setMesg] = useState("");
 
-  const isPhoneValid = phone.trim().length === 10;
+const navigate=useNavigate();
+  const isPhoneValid = /^\d{10}$/.test(phone);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (password !== confirmPwd) {
-      alert("Password and Confirm Password do not match");
-      return;
-    }
+  setMesg("");
 
-    console.log("Signup data:", {
-      fullName,
-      phone,
-      password,
-    });
+  if (password !== confirmPwd) {
+    setError("Password and Confirm Password do not match");
+    return;
+  }
 
-    alert("Signup successful (UI demo)");
-  };
+  try {
+   const res=await axios.post("http://127.0.0.1:5000/api/signup",{
+     name: fullName,
+  phonenumber: phone,
+  password: password,
+   });
+   if(res.data.success){
+      setMesg(res.data.message)
+    navigate("/");
+   }else{
+    setMesg(res.data.message)
+   }
+  } catch (err) {
+  const msg =
+    err.response?.data?.message ||
+    "Something went wrong. Please try again.";
+    console.log(err);
+  setMesg(msg);
+}
+};
 
-  const isFormValid =
-    fullName.trim() &&
-    isPhoneValid &&
-    password.trim() &&
-    confirmPwd.trim() &&
-    password === confirmPwd;
+
+ const isFormValid =
+  fullName.trim().length > 0 &&
+  isPhoneValid === true &&
+  password.trim().length > 0 &&
+  confirmPwd.trim().length > 0 
+
 
   return (
     <div className="login-page">
       <div className="login-card">
-        {/* LEFT SIDE */}
         <div className="login-left">
           <h1 className="app-title">Hospital Management System</h1>
           <p className="app-subtitle">
@@ -44,8 +62,6 @@ const PatientSignup = () => {
             visits easily.
           </p>
         </div>
-
-        {/* RIGHT SIDE – SIGNUP FORM */}
         <div className="login-right">
           <h2 className="login-title">Patient Signup</h2>
           <p className="login-caption">
@@ -79,7 +95,6 @@ const PatientSignup = () => {
                 onChange={(e) =>
                   setPhone(e.target.value.replace(/\D/g, ""))
                 }
-                required
               />
             </div>
 
@@ -107,6 +122,8 @@ const PatientSignup = () => {
               required
             />
 
+              {mesg && <p className="error-text">{mesg}</p>}
+
             <button
               type="submit"
               className="primary-btn"
@@ -117,7 +134,7 @@ const PatientSignup = () => {
 
             <p className="helper-text">
               Already registered?{" "}
-              <span className="helper-link">Login</span>
+             <Link className="helper-link" to="/">Login</Link>
             </p>
           </form>
         </div>

@@ -252,3 +252,8 @@ body {
   text-decoration: underline;
 }
 
+.error-text {
+  color: #e53935;
+  font-size: 13px;
+  margin-bottom: 12px;
+}

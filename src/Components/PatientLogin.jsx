@@ -1,112 +1,6 @@
-// import React, { useState } from "react";
-// import "./PatientLogin.css";
-
-// const PatientLogin = () => {
-//   const [phone, setPhone] = useState("");
-//   const [otp, setOtp] = useState("");
-//   const [step, setStep] = useState("phone"); // "phone" ya "otp"
-
-//   const handleSendOtp = (e) => {
-//     e.preventDefault();
-//     // yaha tusi backend/API call kr sakde ho OTP send karan layi
-//     console.log("Send OTP to:", phone);
-//     setStep("otp");
-//   };
-
-//   const handleVerifyOtp = (e) => {
-//     e.preventDefault();
-//     // yaha tusi OTP verify karan da code/API call lgaoge
-//     console.log("Verify OTP:", otp, "for phone:", phone);
-//     alert("Login successful (UI only demo)!");
-//   };
-
-//   const isPhoneValid = phone.trim().length === 10; // simple check
-
-//   return (
-//     <div className="login-page">
-//       <div className="login-card">
-//         <div className="login-left">
-//           <h1 className="app-title">Hospital Management System</h1>
-//           <p className="app-subtitle">
-//             Patient portal – book appointments, view reports and manage your
-//             visits easily.
-//           </p>
-//         </div>
-
-//         <div className="login-right">
-//           <h2 className="login-title">Patient Login</h2>
-//           <p className="login-caption">
-//             Enter your registered mobile number to receive an OTP.
-//           </p>
-
-//           {step === "phone" && (
-//             <form className="login-form" onSubmit={handleSendOtp}>
-//               <label className="input-label" htmlFor="phone">
-//                 Mobile Number
-//               </label>
-//               <div className="input-group">
-//                 <span className="country-code">+91</span>
-//                 <input
-//                   id="phone"
-//                   type="tel"
-//                   maxLength={10}
-//                   placeholder="Enter 10-digit mobile number"
-//                   value={phone}
-//                   onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-//                   required
-//                 />
-//               </div>
-
-//               <button
-//                 type="submit"
-//                 className="primary-btn"
-//                 disabled={!isPhoneValid}
-//               >
-//                 Send OTP
-//               </button>
-//             </form>
-//           )}
-
-//           {step === "otp" && (
-//             <form className="login-form" onSubmit={handleVerifyOtp}>
-//               <div className="info-box">
-//                 OTP has been sent to <strong>+91-{phone}</strong>
-//               </div>
-
-//               <label className="input-label" htmlFor="otp">
-//                 Enter OTP
-//               </label>
-//               <input
-//                 id="otp"
-//                 type="text"
-//                 maxLength={6}
-//                 placeholder="6-digit OTP"
-//                 value={otp}
-//                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-//                 required
-//               />
-
-//               <button type="submit" className="primary-btn">
-//                 Verify & Login
-//               </button>
-
-//               <button
-//                 type="button"
-//                 className="link-btn"
-//                 onClick={() => setStep("phone")}
-//               >
-//                 Change mobile number
-//               </button>
-//             </form>
-//           )}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default PatientLogin;
 import React, { useState } from "react";
+import {Link,useNavigate} from "react-router-dom"
+import axios from "axios"
 import "./PatientLogin.css";
 
 const PatientLogin = () => {
@@ -115,10 +9,13 @@ const PatientLogin = () => {
   const [password, setPassword] = useState("");
   const [step, setStep] = useState("phone"); // "phone" ya "otp"
   const [mode, setMode] = useState("otp");   // "otp" ya "password"
+  const [mesg,setMesg]=useState("");
 
+ const navigate=useNavigate();
   const isPhoneValid = phone.trim().length === 10;
 
   // ----- OTP FLOW -----
+
   const handleSendOtp = (e) => {
     e.preventDefault();
     console.log("Send OTP to:", phone);
@@ -132,10 +29,26 @@ const PatientLogin = () => {
   };
 
   // ----- PASSWORD LOGIN -----
-  const handlePasswordLogin = (e) => {
+  const handlePasswordLogin = async(e) => {
     e.preventDefault();
-    console.log("Login with password:", { phone, password });
-    alert("Login successful with password (UI demo)");
+    try{
+     const res=await axios.post("http://127.0.0.1:5000/api/",{
+       phonenumber:phone,
+       password:password
+     })
+     if(res.data.success){
+       setMesg(res.data.message);
+       navigate("/home");
+     }else{
+      setMesg(res.data.message);
+     }
+    }catch(err){
+      const msg =
+    err.response?.data?.message ||
+    "Something went wrong. Please try again.";
+    console.log(err);
+  setMesg(msg);
+    }
   };
 
   const switchToOtp = () => {
@@ -217,6 +130,10 @@ const PatientLogin = () => {
               >
                 Send OTP
               </button>
+               <p className="helper-text">
+               Don’t have an account??{" "}
+              <Link className="helper-link" to="/signup">Signup</Link>
+            </p>
             </form>
           )}
 
@@ -285,7 +202,7 @@ const PatientLogin = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-
+               {mesg && <p className="error-text">{mesg}</p>}
               <button
                 type="submit"
                 className="primary-btn"
@@ -293,6 +210,10 @@ const PatientLogin = () => {
               >
                 Login
               </button>
+               <p className="helper-text">
+               Don’t have an account??{" "}
+              <Link className="helper-link" to="/signup">Signup</Link>
+            </p>
             </form>
           )}
         </div>
