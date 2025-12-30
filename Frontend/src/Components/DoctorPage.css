@@ -1,0 +1,28 @@
+.doctor-page {
+  padding: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.doctor-card {
+  width: 400px;
+  padding: 25px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.doctor-card h1 {
+  margin-bottom: 10px;
+}
+
+.book-btn {
+  margin-top: 20px;
+  padding: 10px;
+  width: 100%;
+  background: #0077ff;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
