@@ -3,7 +3,8 @@ import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import Receptionist from "../models/Receptionist.js";
 import Hospital from "../models/Hospital.js";
-
+import Doctor from "../models/Doctor.js"
+import Appointment from "../models/Appointment.js";
 // MailTrap Transporter
 // 
 // Looking to send emails in production? Check out our Email API/SMTP product!
@@ -15,6 +16,18 @@ var transporter = nodemailer.createTransport({
     pass: "c027d88cc0a538"
   }
 });
+
+
+export const getDoctorAppointments = async (req, res) => {
+  try {
+    const appointments = await Appointment.find({ doctor: req.params.doctorId })
+      .sort({ date: 1 });
+
+    res.json({ success: true, appointments });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
 
 transporter.verify((error, success) => {
   if (error) {
@@ -29,7 +42,25 @@ const createToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
 
+export const toggleAvailability = async (req, res) => {
+  try {
+    const { available } = req.body;
 
+    const doctor = await Doctor.findByIdAndUpdate(
+      req.params.id,
+      { available },
+      { new: true }
+    );
+
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: "Doctor not found" });
+    }
+
+    res.json({ success: true, doctor });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
 
 
 // ---------------- SIGNUP ----------------
