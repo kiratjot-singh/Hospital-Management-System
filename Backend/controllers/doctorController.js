@@ -1,53 +1,79 @@
+import Department from "../models/Department.js";
 import Doctor from "../models/Doctor.js";
-import Hospital from "../models/Hospital.js";   // <-- important
+import Hospital from "../models/Hospital.js";   
 import bcrypt from "bcryptjs";
 
 // ---------------- Doctor Signup ----------------
 export const doctorSignup = async (req, res) => {
   try {
-    const { name, phone, password, specialization, hospitalId } = req.body;
-    console.log("Received hospitalId from frontend:", hospitalId);
+    const { name, phone, password, hospitalId, departments } = req.body;
 
-
-    // Validate required fields
-    if (!name || !phone || !password || !specialization || !hospitalId) {
-      return res.json({ success: false, message: "All fields required" });
+    
+    if (
+      !name ||
+      !phone ||
+      !password ||
+      !hospitalId ||
+      !departments ||
+      departments.length === 0
+    ) {
+      return res.json({
+        success: false,
+        message: "All fields required",
+      });
     }
 
-    // Check duplicate doctor
+    
     const exists = await Doctor.findOne({ phone });
     if (exists) {
-      return res.json({ success: false, message: "Phone already registered" });
+      return res.json({
+        success: false,
+        message: "Phone already registered",
+      });
     }
 
-    // Check hospital exists
     const hospital = await Hospital.findById(hospitalId);
     if (!hospital) {
-      return res.json({ success: false, message: "Invalid hospital selected" });
+      return res.json({
+        success: false,
+        message: "Invalid hospital selected",
+      });
     }
 
-    // Hash password
-    const hashed = await bcrypt.hash(password, 10);
+ 
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create doctor (note: hospital field, not hospitalId)
+
     const doctor = await Doctor.create({
       name,
       phone,
-      password: hashed,
-      specialization,
-      hospital: hospitalId
+      password: hashedPassword,
+      hospital: hospitalId,
+      departments,
     });
 
-    // Add doctor to hospital list
+   
     await Hospital.findByIdAndUpdate(hospitalId, {
-      $push: { doctors: doctor._id }
+      $push: { doctors: doctor._id },
     });
 
-    return res.json({ success: true, doctor });
+    
+    await Department.updateMany(
+      { _id: { $in: departments } },
+      { $push: { doctors: doctor._id } }
+    );
+
+    return res.json({
+      success: true,
+      doctor,
+    });
 
   } catch (err) {
-    console.log("Error:", err);
-    return res.json({ success: false, message: err.message });
+    console.log("Doctor signup error:", err);
+    return res.json({
+      success: false,
+      message: err.message,
+    });
   }
 };
 
@@ -91,3 +117,15 @@ export const doctorLogin = async (req, res) => {
     return res.json({ success: false, message: err.message });
   }
 };
+export const getDepartments=async(req,res)=>{
+  const {hospitalId}=req.body;
+  try{
+    const departments=await Department.find({hospital:hospitalId});
+    if(!departments){
+      return res.json({success:false,message:"cannot get departments"});
+    }
+    return res.json({success:true,departments});
+  }catch(err){
+     return res.json({ success: false, message: err.message });
+  }
+}

@@ -7,7 +7,7 @@ const DoctorLogin = () => {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
 
-  const [loginMode, setLoginMode] = useState("otp"); // otp / password
+  const [loginMode, setLoginMode] = useState("otp"); 
 
   const handleLogin = async () => {
     if (!phone) return alert("Please enter phone number");

@@ -1,20 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./PatientHome.css";
+import { useNavigate, useParams } from "react-router";
+import axios from "axios";
 
 const PatientHome = () => {
   const [search, setSearch] = useState("");
   const username = "Opinder";
-
-  const hospitals = [
-    { id: 1, name: "City Care Hospital", area: "Amritsar" },
-    { id: 2, name: "Fortis Healthcare", area: "Amritsar" },
-    { id: 3, name: "LifeLine Hospital", area: "Amritsar" },
-    { id: 4, name: "Apollo Clinic", area: "Amritsar" },
-      { id: 5, name: "City Care Hospital", area: "Amritsar" },
-    { id: 6, name: "Fortis Healthcare", area: "Amritsar" },
-    { id: 7, name: "LifeLine Hospital", area: "Amritsar" },
-    { id: 8, name: "Apollo Clinic", area: "Amritsar" }
-  ];
+  const [hospitals,setHospitals]=useState([]);
+  const {phone}=useParams();
+  const navigate=useNavigate();
+  useEffect(()=>{
+    const gethospitals=async()=>{
+   try{
+   const res=await axios.get("http://localhost:5000/api/hospital/getHospitals");
+    if(res.data.success){
+      setHospitals(res.data.hospitals);
+    }
+    }catch(err){
+      console.log(err);
+    }
+    }
+    gethospitals();
+  },[phone])
 
   const filtered = hospitals.filter(h =>
     h.name.toLowerCase().includes(search.toLowerCase())
@@ -54,12 +61,12 @@ const PatientHome = () => {
 
         <div className="hospital-list">
           {filtered.map(h => (
-            <div key={h.id} className="hospital-row">
+            <div key={h._id} className="hospital-row">
               <div>
                 <h3>{h.name}</h3>
                 <span>{h.area}</span>
               </div>
-              <button className="view-btn">View</button>
+              <button className="view-btn" onClick={()=>{navigate(`/hospitaldetails/${h._id}`)}}>View</button>
             </div>
           ))}
         </div>

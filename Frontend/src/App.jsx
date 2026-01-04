@@ -1,10 +1,5 @@
-
-
-
 import { Routes, Route } from "react-router-dom";
-
 import RoleSelect from "./Components/RoleSelect";
-
 import ReceptionistLogin from "./Components/ReceptionistLogin";
 import ReceptionistSignup from "./Components/ReceptionistSignup";
 import ReceptionistHome from "./Components/ReceptionistHome";
@@ -12,7 +7,10 @@ import DoctorPage from "./Components/DoctorPage";
 import PatientSignup from "./Components/PatientSignup";
 import PatientLogin from "./Components/PatientLogin";
 import DoctorAppointments from "./Components/DoctorAppointments";
-
+import PatientPreferences from './Components/PatientPreferences'
+import PatientHome from './Components/PatientHome'
+import HospitalDetails from './Components/HospitalDetails'
+import DepartmentDoctors from './Components/DepartmentDoctors'
 import DoctorLogin from "./Components/DoctorLogin";
 import DoctorSignup from "./Components/DoctorSignup";
 
@@ -35,16 +33,14 @@ function App() {
         <Route path="/signup/doctor" element={<DoctorSignup />} />
         <Route path="/doctor/:id" element={<DoctorPage />} />
 
-        {/* <Route path="/home/doctor/:phone" element={<DoctorHome />} /> */}
-
-        {/* ---------------- Hospital / Departments ---------------- */}
-        {/* <Route path="/hospital" element={<HospitalDetails />} />
-        <Route path="/departments" element={<DepartmentDoctors />} /> */}
-
+             {/* ---------------- Patient Routes ---------------- */}
         <Route path="/login/patient" element={<PatientLogin />} />
         <Route path="/signup/patient" element={<PatientSignup />} />
         <Route path="/receptionist/doctor/:doctorId/appointments" element={<DoctorAppointments />}/>
-
+        <Route path='/home/patient/:phone' element={<PatientHome/>} />
+       <Route path='/preferences' element={<PatientPreferences/>} />
+        <Route path='/hospitaldetails/:id' element={<HospitalDetails/>} />
+         <Route path='/department' element={<DepartmentDoctors/>} />
 
       </Routes>
     </>

@@ -38,7 +38,7 @@ const PatientLogin = () => {
      })
      if(res.data.success){
        setMesg(res.data.message);
-       navigate("/home");
+       navigate(`/home/patient/${phone}`);
      }else{
       setMesg(res.data.message);
      }

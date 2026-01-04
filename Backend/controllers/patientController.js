@@ -1,6 +1,8 @@
 import Patient from "../models/Patient.js"
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt";
+import Hospital from "../models/Hospital.js";
+import Department  from "../models/Department.js";
 
 export const signup = async (req, res) => {
   try {
@@ -73,3 +75,33 @@ export const login=async(req,res)=>{
   });
     }
 }
+export const getHospitalDetails = async (req, res) => {
+  try {
+    const hospitalId = req.params.id;
+
+    const hospital = await Hospital.findById(hospitalId);
+    if (!hospital) {
+      return res.json({
+        success: false,
+        message: "Hospital not found",
+      });
+    }
+
+    const departments = await Department.find({
+      hospital: hospitalId,   
+    });
+
+    return res.json({
+      success: true,
+      hospital,
+      departments,
+    });
+
+  } catch (err) {
+    console.log(err);
+    return res.json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};

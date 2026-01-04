@@ -4,8 +4,13 @@ const doctorSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     phone: { type: String, unique: true, required: true },
-    specialization: { type: String, required: true },
-
+    departments: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Department",
+      required: true
+    },
+  ],
     password: { type: String },
     otp: { type: String },
     otpExpires: { type: Date },

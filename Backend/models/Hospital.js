@@ -20,8 +20,6 @@ const HospitalSchema = new mongoose.Schema(
       phone: String,
       email: String
     },
-
-    departments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Department" }],
     doctors: [{ type: mongoose.Schema.Types.ObjectId, ref: "Doctor" }],
 
     establishedYear: Number,
