@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import Hospital from "../models/Hospital.js";
 
 
 const connectDB = async () => {
