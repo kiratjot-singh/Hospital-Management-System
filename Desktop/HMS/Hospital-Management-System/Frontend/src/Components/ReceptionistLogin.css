@@ -1,0 +1,254 @@
+/* sab element da default margin/padding hata de */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* FULL page height */
+html,
+body,
+#root {
+  height: 100%;
+}
+
+/* light blue poori screen te */
+body {
+  background-color: #e8f7f9; /* light blue – main background */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, sans-serif;
+}
+
+/* Full page container (center card) */
+.login-page {
+  min-height: 100vh; /* screen di poori height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+}
+
+/* Card container */
+.login-card {
+  width: 100%;
+  max-width: 900px;
+  background-color: #ffffff; /* white card */
+  border-radius: 16px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Left side (info) */
+.login-left {
+  background: #58a7ca; /* main accent blue */
+  color: #ffffff;
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.app-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.app-subtitle {
+  font-size: 15px;
+  line-height: 1.6;
+  opacity: 0.95;
+}
+
+/* Right side (form) */
+.login-right {
+  padding: 32px 32px 40px;
+  background-color: #f9feff;
+}
+
+.login-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #124f68;
+}
+
+.login-caption {
+  font-size: 13px;
+  color: #6a7a86;
+  margin-bottom: 24px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.input-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #35566b;
+}
+
+/* phone number group */
+.input-group {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #c7dde5;
+  overflow: hidden;
+}
+
+.country-code {
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  background-color: #e8f7f9;
+  color: #35566b;
+  border-right: 1px solid #c7dde5;
+}
+
+.input-group input {
+  border: none;
+  outline: none;
+  padding: 10px 12px;
+  font-size: 14px;
+  flex: 1;
+}
+
+.login-form input[type="text"],
+.login-form input[type="tel"],
+.login-form input[type="password"] {
+  border-radius: 10px;
+  border: 1px solid #c7dde5;
+  background-color: #ffffff;
+  padding: 10px 12px;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.15s ease, box-shadow 0.15s ease;
+}
+
+
+.login-form input:focus {
+  border-color: #58a7ca;
+  box-shadow: 0 0 0 2px rgba(88, 167, 202, 0.2);
+}
+
+/* primary button */
+.primary-btn {
+  margin-top: 6px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: none;
+  outline: none;
+  background-color: #58a7ca;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease,
+    background-color 0.1s ease, opacity 0.1s ease;
+}
+
+.primary-btn:hover {
+  background-color: #4a94b5;
+  box-shadow: 0 8px 18px rgba(88, 167, 202, 0.35);
+  transform: translateY(-1px);
+}
+
+.primary-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* link style button */
+.link-btn {
+  margin-top: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+  color: #58a7ca;
+  cursor: pointer;
+  text-decoration: underline;
+  align-self: flex-start;
+}
+
+/* info box for OTP step */
+.info-box {
+  background-color: #e8f7f9;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 13px;
+  color: #35566b;
+}
+
+/* responsive */
+@media (max-width: 768px) {
+  .login-card {
+    grid-template-columns: 1fr;
+  }
+
+  .login-left {
+    padding: 24px 20px;
+    text-align: center;
+    align-items: center;
+  }
+
+  .login-right {
+    padding: 24px 20px 28px;
+  }
+}
+/* toggle buttons for OTP / Password */
+.toggle-container {
+  display: flex;
+  background-color: #e8f7f9;
+  border-radius: 999px;
+  padding: 4px;
+  margin-bottom: 18px;
+  gap: 4px;
+}
+
+.toggle-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 6px 8px;
+  font-size: 13px;
+  border-radius: 999px;
+  cursor: pointer;
+  color: #35566b;
+}
+
+.toggle-btn.active {
+  background-color: #58a7ca;
+  color: #ffffff;
+}
+
+.toggle-btn:focus {
+  outline: none;
+}
+
+/* signup helper text */
+.helper-text {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #6a7a86;
+}
+
+.helper-link {
+  color: #58a7ca;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.helper-link:hover {
+  text-decoration: underline;
+}
+

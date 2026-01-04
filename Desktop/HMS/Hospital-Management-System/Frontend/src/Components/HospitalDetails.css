@@ -1,0 +1,176 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ================= PAGE ================= */
+
+.hospital-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #e8f7f9, #f4fbfc);
+  padding: 32px;
+}
+
+/* ================= HERO ================= */
+
+.hospital-hero {
+  background: white;
+  border-radius: 28px;
+  padding: 32px;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 28px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+/* LEFT */
+
+.hero-left h1 {
+  font-size: 2.1rem;
+  color: #124f68;
+  margin-bottom: 10px;
+}
+
+.location {
+  font-size: 0.95rem;
+  color: #6a7a86;
+  margin-bottom: 6px;
+}
+
+.rating {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #58a7ca;
+  margin-bottom: 14px;
+}
+
+.desc {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #35566b;
+  margin-bottom: 8px;
+}
+
+/* RIGHT IMAGE */
+
+.hero-right {
+  width: 100%;
+  height: 260px;
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+.hero-right img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.hero-right:hover img {
+  transform: scale(1.06);
+}
+
+/* ================= DEPARTMENTS ================= */
+
+.departments-section {
+  margin-top: 42px;
+}
+
+.departments-section h2 {
+  font-size: 1.6rem;
+  color: #124f68;
+  margin-bottom: 18px;
+}
+
+.departments-section p {
+  background: white;
+  padding: 18px 22px;
+  border-radius: 16px;
+  color: #6a7a86;
+  font-size: 0.95rem;
+  max-width: 420px;
+}
+
+/* GRID */
+
+.departments-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+/* CARD */
+
+.dept-card {
+  background: white;
+  border-radius: 22px;
+  padding: 26px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.dept-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.14);
+}
+
+.dept-card span {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #124f68;
+  text-align: center;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 1024px) {
+  .hospital-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-right {
+    height: 220px;
+  }
+
+  .departments-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .hospital-page {
+    padding: 16px;
+  }
+
+  .hospital-hero {
+    padding: 22px;
+  }
+
+  .hero-left h1 {
+    font-size: 1.7rem;
+  }
+
+  .hero-right {
+    height: 200px;
+  }
+
+  .departments-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .departments-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
