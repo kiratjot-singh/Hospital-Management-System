@@ -4,12 +4,14 @@ import "./DoctorAppointments.css";
 
 const DoctorAppointments = () => {
   const { id } = useParams();
+  console.log("Doctor ID from params:", id);
+
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchAppointments = async () => {
-      const res = await fetch(`http://localhost:5000/api/appointments/doctor/${id}`);
+      const res = await fetch(`http://localhost:5000/api/receptionist/doctor/${id}/appointments`);
       const data = await res.json();
       if (data.success) setAppointments(data.appointments);
       setLoading(false);
@@ -30,8 +32,8 @@ const DoctorAppointments = () => {
         <table className="appointments-table">
           <thead>
             <tr>
+              <th>Doctor</th>
               <th>Patient</th>
-              <th>Phone</th>
               <th>Date</th>
               <th>Slot</th>
               <th>Status</th>
@@ -40,8 +42,8 @@ const DoctorAppointments = () => {
           <tbody>
             {appointments.map((a) => (
               <tr key={a._id}>
-                <td>{a.patientName}</td>
-                <td>{a.patientPhone || "-"}</td>
+                <td>{a.doctorName || "-"}</td>
+                <td>{a.patientName || "-"}</td>
                 <td>{new Date(a.date).toLocaleDateString()}</td>
                 <td>{a.slot}</td>
                 <td>

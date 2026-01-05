@@ -212,7 +212,7 @@ const PatientLogin = () => {
               </button>
                <p className="helper-text">
                Don’t have an account??{" "}
-              <Link className="helper-link" to="/signup">Signup</Link>
+              <Link className="helper-link" to="patient/signup">Signup</Link>
             </p>
             </form>
           )}

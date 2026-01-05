@@ -4,6 +4,7 @@ import nodemailer from "nodemailer";
 import Receptionist from "../models/Receptionist.js";
 import Hospital from "../models/Hospital.js";
 import Doctor from "../models/Doctor.js"
+import Patient from "../models/Patient.js"
 import Appointment from "../models/Appointment.js";
 // MailTrap Transporter
 // 
@@ -20,14 +21,33 @@ var transporter = nodemailer.createTransport({
 
 export const getDoctorAppointments = async (req, res) => {
   try {
-    const appointments = await Appointment.find({ doctor: req.params.doctorId })
+    const { doctorId } = req.params;
+
+    const appointments = await Appointment.find({ doctor: doctorId })
+      .populate("doctor", "name")
+      .populate("patient", "name")
+      .populate("hospital", "name")
       .sort({ date: 1 });
 
-    res.json({ success: true, appointments });
+    const formatted = appointments.map(a => ({
+      _id: a._id,
+      doctorName: a.doctor?.name || "-",
+      patientName: a.patient?.name || "-",
+      hospitalName: a.hospital?.name || "-",
+      date: a.date,
+      slot: a.slot,
+      status: a.status,
+      reason: a.reason
+    }));
+
+    res.json({ success: true, appointments: formatted });
+
   } catch (err) {
+    console.error(err);
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
 
 transporter.verify((error, success) => {
   if (error) {
