@@ -61,7 +61,19 @@ transporter.verify((error, success) => {
 const createToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
+// export const bookAppointment = async(req,res)=>{
+//   try{
+//     const { patientId, doctorId, date, timeSlot } = req.body;
 
+//   const appointment = new Appointment({ patient: patientId, doctor: doctorId, date, timeSlot });
+//   await appointment.save();
+
+//   res.json({ success: true, appointment });
+//   }
+//   catch(err){
+//     res.status(500).json({ success: false, message: err.message });
+//   }
+// }
 export const toggleAvailability = async (req, res) => {
   try {
     const { available } = req.body;

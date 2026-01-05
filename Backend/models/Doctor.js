@@ -20,6 +20,12 @@ const doctorSchema = new mongoose.Schema(
     image: { type: String, default: "" }, // profile photo URL
     available: { type: Boolean, default: true }, // for receptionist toggle
     active: { type: Boolean, default: true }, // soft delete / disable doctor
+    workingHours: {
+    start: { type: String, required: true }, // "10:00"
+    end: { type: String, required: true },   // "17:00"
+    },
+    slotDuration: { type: Number, default: 15 } // minutes
+
   },
   { timestamps: true }
 );
