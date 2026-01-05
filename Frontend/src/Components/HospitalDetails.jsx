@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./HospitalDetails.css";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import axios from "axios";
 
 const HospitalDetails = () => {
@@ -9,6 +9,7 @@ const HospitalDetails = () => {
   const [hospital, setHospital] = useState(null);
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate=useNavigate();
 
   useEffect(() => {
     const getDetails = async () => {
@@ -90,7 +91,11 @@ const HospitalDetails = () => {
         ) : (
           <div className="departments-grid">
             {departments.map((dept) => (
-              <div className="dept-card" key={dept._id}>
+              <div
+                className="dept-card"
+                key={dept._id}
+                onClick={() => {navigate(`/departmentdoctors/${dept._id}`)}}
+              >
                 <span>{dept.name}</span>
               </div>
             ))}
@@ -102,5 +107,3 @@ const HospitalDetails = () => {
 };
 
 export default HospitalDetails;
-
-

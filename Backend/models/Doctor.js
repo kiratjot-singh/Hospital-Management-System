@@ -14,7 +14,7 @@ const doctorSchema = new mongoose.Schema(
     password: { type: String },
     otp: { type: String },
     otpExpires: { type: Date },
-
+    qualifications:{type:String,required:true},
     hospital: { type: mongoose.Schema.Types.ObjectId, ref: "Hospital", required: true },
     experience: { type: Number, default: 0 },
     image: { type: String, default: "" }, // profile photo URL
