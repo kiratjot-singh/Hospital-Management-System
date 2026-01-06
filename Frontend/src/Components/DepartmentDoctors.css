@@ -5,11 +5,15 @@
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
+/* ================= PAGE ================= */
+
 .doctors-page {
   min-height: 100vh;
   background-color: #E8F7F9;
   padding: 32px;
 }
+
+/* ================= HEADER ================= */
 
 .dept-header {
   text-align: center;
@@ -27,26 +31,43 @@
   color: #6A7A86;
 }
 
+/* ================= GRID ================= */
+
 .doctors-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
 }
 
+/* ================= CARD ================= */
+
 .doctor-card {
-  background: white;
+  background: #ffffff;
   border-radius: 26px;
   padding: 22px;
   display: flex;
   gap: 18px;
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  /* softer default shadow */
+  box-shadow: 0 8px 22px rgba(18, 79, 104, 0.12);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
 }
 
 .doctor-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.12);
+  transform: translateY(-6px);
+  background: #f1fbff;
+  box-shadow: 0 18px 42px rgba(18, 79, 104, 0.22);
 }
+
+.doctor-card:active {
+  transform: translateY(-2px) scale(0.98);
+}
+
+/* ================= IMAGE ================= */
 
 .doctor-card img {
   width: 96px;
@@ -54,6 +75,8 @@
   border-radius: 18px;
   object-fit: cover;
 }
+
+/* ================= INFO ================= */
 
 .doctor-info {
   flex: 1;
@@ -94,6 +117,8 @@
   color: #6A7A86;
 }
 
+/* ================= BUTTON ================= */
+
 .book-btn {
   background-color: #58A7CA;
   color: white;
@@ -103,13 +128,24 @@
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease, box-shadow 0.2s ease;
+
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
 }
 
 .book-btn:hover {
   background-color: #4A94B5;
-  box-shadow: 0 6px 16px rgba(88, 167, 202, 0.4);
+  box-shadow: 0 8px 18px rgba(88, 167, 202, 0.45);
+  transform: translateY(-1px);
 }
+
+.book-btn:active {
+  transform: scale(0.96);
+}
+
+/* ================= RESPONSIVE ================= */
 
 @media (max-width: 1024px) {
   .doctors-grid {

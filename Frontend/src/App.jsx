@@ -13,6 +13,7 @@ import HospitalDetails from './Components/HospitalDetails'
 import DepartmentDoctors from './Components/DepartmentDoctors'
 import DoctorLogin from "./Components/DoctorLogin";
 import DoctorSignup from "./Components/DoctorSignup";
+import DoctorSlots from "./Components/DoctorSlots";
 
 
 function App() {
@@ -41,7 +42,7 @@ function App() {
        <Route path='/preferences' element={<PatientPreferences/>} />
         <Route path='/hospitaldetails/:id' element={<HospitalDetails/>} />
          <Route path='/departmentdoctors/:id' element={<DepartmentDoctors/>} />
-
+         <Route path='/slots/:id' element={<DoctorSlots/>} />
       </Routes>
     </>
   );

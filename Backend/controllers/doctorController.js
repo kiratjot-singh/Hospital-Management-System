@@ -129,3 +129,24 @@ export const getDepartments=async(req,res)=>{
      return res.json({ success: false, message: err.message });
   }
 }
+export const getDoctorsByDepartment = async (req, res) => {
+  try {
+    const deptId = req.params.id;
+
+    const doctors = await Doctor.find({
+      departments: deptId,
+      active: true,
+      available: true,
+    })
+      .select("-password -otp -otpExpires") 
+    return res.status(200).json({
+      success: true,
+      doctors,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
