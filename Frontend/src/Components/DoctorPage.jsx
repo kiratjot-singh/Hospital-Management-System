@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import "./DoctorPage.css";
-import { useNavigate } from "react-router-dom";
-
-
-
 
 const DoctorPage = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id } = useParams(); // doctorId
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+
+  const hospitalId = query.get("hospital");
+  const date = query.get("date") || new Date().toISOString().split("T")[0];
+
   const [doctor, setDoctor] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -32,10 +34,8 @@ const DoctorPage = () => {
     try {
       const res = await fetch(`http://localhost:5000/api/receptionist/${id}/availability`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ available: !doctor.available })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ available: !doctor.available }),
       });
 
       const data = await res.json();
@@ -48,12 +48,9 @@ const DoctorPage = () => {
   if (loading) return <div className="doctor-loading">Loading doctor profile…</div>;
   if (!doctor) return <div className="doctor-loading">Doctor not found</div>;
 
-
-  
   return (
     <div className="doctor-page">
       <div className="doctor-card">
-        {/* Left section */}
         <div className="doctor-left">
           <img
             src={doctor.image || "https://cdn-icons-png.flaticon.com/512/3774/3774299.png"}
@@ -61,10 +58,11 @@ const DoctorPage = () => {
             className="doctor-photo"
           />
           <h2>{doctor.name}</h2>
-          <p className="department">{doctor.area}</p>
+          <p className="department">
+            {doctor.departments?.map((d) => d.name).join(", ") || "-"}
+          </p>
         </div>
 
-        {/* Right section */}
         <div className="doctor-right">
           <div className="info-grid">
             <div>
@@ -88,18 +86,18 @@ const DoctorPage = () => {
           </div>
 
           <div className="actions">
-           
+          <button
+  className="action-btn primary"
+  onClick={() =>
+    navigate(`/receptionist/doctor/${id}/appointments?hospital=${hospitalId}&date=${date}`)
+  }
+>
+  View Schedule
+</button>
 
-            <button
-              className="action-btn primary"
-              onClick={() => navigate(`/receptionist/doctor/${id}/appointments`)}
-            >
-              View Appointments
-            </button>
             <button className="action-btn secondary" onClick={toggleAvailability}>
-            {doctor.available ? "Mark Unavailable" : "Mark Available"}
+              {doctor.available ? "Mark Unavailable" : "Mark Available"}
             </button>
-
           </div>
         </div>
       </div>

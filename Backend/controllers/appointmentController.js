@@ -99,6 +99,74 @@ export const bookAppointment = async (req, res) => {
   }
 };
 
+
+
+
+
+export const getDoctorSlots = async (req, res) => {
+  try {
+    const { doctor, hospital, date } = req.query;
+
+    if (!doctor || !hospital || !date) {
+      return res.status(400).json({ success: false, message: "Missing parameters" });
+    }
+
+    const doctorDoc = await Doctor.findById(doctor);
+    if (!doctorDoc) return res.status(404).json({ success: false, message: "Doctor not found" });
+
+    const generateSlots = (start, end, duration) => {
+      const slots = [];
+      let [h, m] = start.split(":").map(Number);
+      let startMin = h * 60 + m;
+      let [eh, em] = end.split(":").map(Number);
+      let endMin = eh * 60 + em;
+
+      while (startMin + duration <= endMin) {
+        const s = startMin;
+        const e = startMin + duration;
+        const f = (x) =>
+          String(Math.floor(x / 60)).padStart(2, "0") + ":" + String(x % 60).padStart(2, "0");
+        slots.push(`${f(s)}-${f(e)}`);
+        startMin += duration;
+      }
+
+      return slots;
+    };
+
+    const allSlots = generateSlots(
+      doctorDoc.workingHours.start,
+      doctorDoc.workingHours.end,
+      doctorDoc.slotDuration || 15
+    );
+
+    const dayStart = new Date(date);
+    dayStart.setHours(0, 0, 0, 0);
+    const dayEnd = new Date(dayStart);
+    dayEnd.setHours(23, 59, 59, 999);
+
+    const booked = await Appointment.find({
+      doctor,
+      hospital,
+      date: { $gte: dayStart, $lte: dayEnd },
+      status: "booked",
+    }).populate("patient", "name");
+
+    const bookedMap = {};
+    booked.forEach((b) => (bookedMap[b.slot] = b));
+
+    const slots = allSlots.map((s) => ({
+      slot: s,
+      status: bookedMap[s] ? "booked" : "free",
+      patientName: bookedMap[s]?.patient?.name || null,
+      appointmentId: bookedMap[s]?._id || null,
+    }));
+
+    res.json({ success: true, slots });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 /* ---------------------------------- */
 /* Get Free Slots                     */
 /* ---------------------------------- */

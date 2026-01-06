@@ -1,34 +1,45 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import "./DoctorAppointments.css";
 
 const DoctorAppointments = () => {
   const { id } = useParams(); // doctorId
-  const hospitalId = "HOSPITAL_ID"; // replace with real one
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
 
-  const [date, setDate] = useState(() => new Date().toISOString().split("T")[0]);
+  const hospitalId = query.get("hospital");
+  const initialDate = query.get("date") || new Date().toISOString().split("T")[0];
+
+  const [date, setDate] = useState(initialDate);
   const [slots, setSlots] = useState([]);
   const [patients, setPatients] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedPatient, setSelectedPatient] = useState("");
   const [loading, setLoading] = useState(true);
+  const [booking, setBooking] = useState(false);
 
   const fetchSlots = async () => {
-    setLoading(true);
-    const res = await fetch(
-      `http://localhost:5000/api/appointments/doctor-slots?doctor=${id}&hospital=${hospitalId}&date=${date}`
-    );
-    const data = await res.json();
-    if (data.success) setSlots(data.slots);
-    setLoading(false);
+    try {
+      setLoading(true);
+      const res = await fetch(
+        `http://localhost:5000/api/appointments/doctor-slots?doctor=${id}&hospital=${hospitalId}&date=${date}`
+      );
+      const data = await res.json();
+      if (data.success) setSlots(data.slots);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to load slots");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    fetchSlots();
-  }, [id, date]);
+    if (hospitalId) fetchSlots();
+  }, [id, date, hospitalId]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/patients")
+    fetch("http://localhost:5000/api/patient")
       .then((r) => r.json())
       .then((d) => setPatients(d.patients || []));
   }, []);
@@ -36,21 +47,32 @@ const DoctorAppointments = () => {
   const bookSlot = async () => {
     if (!selectedPatient || !selectedSlot) return alert("Select patient and slot");
 
-    await fetch("http://localhost:5000/api/appointments/book", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        doctor: id,
-        patient: selectedPatient,
-        hospital: hospitalId,
-        date,
-        slot: selectedSlot,
-      }),
-    });
+    try {
+      setBooking(true);
+      const res = await fetch("http://localhost:5000/api/appointments/book", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          doctor: id,
+          patient: selectedPatient,
+          hospital: hospitalId,
+          date,
+          slot: selectedSlot,
+        }),
+      });
 
-    setSelectedSlot(null);
-    setSelectedPatient("");
-    fetchSlots();
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Booking failed");
+
+      alert("Appointment booked successfully");
+      setSelectedSlot(null);
+      setSelectedPatient("");
+      fetchSlots();
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setBooking(false);
+    }
   };
 
   return (
@@ -59,30 +81,36 @@ const DoctorAppointments = () => {
 
       <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
 
-      <table className="appointments-table">
-        <thead>
-          <tr>
-            <th>Slot</th>
-            <th>Status</th>
-            <th>Patient</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {slots.map((s) => (
-            <tr key={s.slot} className={s.status}>
-              <td>{s.slot}</td>
-              <td>{s.status}</td>
-              <td>{s.patientName || "-"}</td>
-              <td>
-                {s.status === "free" && (
-                  <button onClick={() => setSelectedSlot(s.slot)}>Book</button>
-                )}
-              </td>
+      {loading ? (
+        <div className="loading">Loading slots...</div>
+      ) : (
+        <table className="appointments-table">
+          <thead>
+            <tr>
+              <th>Slot</th>
+              <th>Status</th>
+              <th>Patient</th>
+              <th>Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {slots.map((s) => (
+              <tr key={s.slot} className={s.status}>
+                <td>{s.slot}</td>
+                <td>{s.status}</td>
+                <td>{s.patientName || "-"}</td>
+                <td>
+                  {s.status === "free" && (
+                    <button disabled={booking} onClick={() => setSelectedSlot(s.slot)}>
+                      Book
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
 
       {selectedSlot && (
         <div className="booking-modal">
@@ -98,8 +126,12 @@ const DoctorAppointments = () => {
           </select>
 
           <div className="modal-actions">
-            <button onClick={bookSlot}>Confirm Booking</button>
-            <button onClick={() => setSelectedSlot(null)}>Cancel</button>
+            <button disabled={booking} onClick={bookSlot}>
+              {booking ? "Booking..." : "Confirm Booking"}
+            </button>
+            <button disabled={booking} onClick={() => setSelectedSlot(null)}>
+              Cancel
+            </button>
           </div>
         </div>
       )}

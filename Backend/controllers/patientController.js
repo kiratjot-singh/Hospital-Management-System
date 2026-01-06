@@ -75,6 +75,19 @@ export const login=async(req,res)=>{
   });
     }
 }
+
+export const getpatients = async (req, res) => {
+  try {
+    const patients = await Patient.find() // no filter on active
+      .select("_id name phonenumber")     // correct field name
+      .sort({ name: 1 });
+
+    res.json({ success: true, patients });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 export const getHospitalDetails = async (req, res) => {
   try {
     const hospitalId = req.params.id;

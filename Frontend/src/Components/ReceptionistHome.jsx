@@ -3,16 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import "./ReceptionistHome.css";
 
 const ReceptionistHome = () => {
-  const navigate = useNavigate();  // ✅ FIXED
+  const navigate = useNavigate();
   const { phone } = useParams();
 
   const [search, setSearch] = useState("");
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState("");
+  const [date, setDate] = useState(() => new Date().toISOString().split("T")[0]);
 
-  // ==========================
-  // Fetch receptionist details
-  // ==========================
   useEffect(() => {
     const fetchName = async () => {
       try {
@@ -26,7 +24,6 @@ const ReceptionistHome = () => {
         );
 
         const data = await response.json();
-
         if (data.success) {
           setUser(data.user);
           setUsername(data.user.name);
@@ -42,14 +39,8 @@ const ReceptionistHome = () => {
     fetchName();
   }, [phone]);
 
-  // ==========================
-  // Extract doctors array
-  // ==========================
   const Doctors = user?.hospital?.doctors || [];
 
-  // ==========================
-  // Filter doctors by search
-  // ==========================
   const filtered = Doctors.filter((d) =>
     d.name.toLowerCase().includes(search.toLowerCase())
   );
@@ -79,6 +70,13 @@ const ReceptionistHome = () => {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
+
+          <input
+            type="date"
+            className="date-picker"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
         </div>
       </section>
 
@@ -91,15 +89,17 @@ const ReceptionistHome = () => {
               <div key={d._id} className="Doctor-row">
                 <div>
                   <h3>{d.name}</h3>
-                  <span>{d.area}</span>
+                  <span>{d.specialty || d.area || "-"}</span>
                 </div>
 
                 <button
-                  className="view-btn"
-                  onClick={() => navigate(`/doctor/${d._id}`)}  // ✅ navigation fixed
-                >
-                  View
-                </button>
+  className="view-btn"
+  onClick={() =>
+    navigate(`/doctor/${d._id}?hospital=${user.hospital._id}&date=${date}`)
+  }
+>
+  View 
+</button>
               </div>
             ))
           ) : (

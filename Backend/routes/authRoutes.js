@@ -17,7 +17,6 @@ import {
   verifyEmailOtp,
   getname,
   toggleAvailability,
-  getDoctorAppointments
   
 } from "../controllers/authController.js";
 
@@ -29,7 +28,7 @@ router.post("/send-email-otp", sendEmailOtp);
 router.post("/verify-email-otp", verifyEmailOtp);
 router.post("/getname", getname);
 router.patch("/:id/availability",  toggleAvailability);
-router.get("/doctor/:doctorId/appointments", getDoctorAppointments);
+
 // router.post("/bookappointment",bookAppointment)
 
 
