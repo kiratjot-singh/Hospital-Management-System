@@ -6,11 +6,12 @@ import {
   getPatientAppointments,
   updateAppointmentStatus,
   getDoctorSlots
-} from "../controllers/appointmentController.js";
+} from "../controllers/appointmentController.js"; 
+import { protectPatient } from "../controllers/patientController.js";
 
 const router = express.Router();
 
-router.post("/book", bookAppointment);
+router.post("/book", protectPatient, bookAppointment);
 router.get("/free-slots", getFreeSlots);
 router.get("/doctor/:doctorId", getDoctorAppointments);
 router.get("/patient/:patientId", getPatientAppointments);

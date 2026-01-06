@@ -14,6 +14,7 @@ import DepartmentDoctors from './Components/DepartmentDoctors'
 import DoctorLogin from "./Components/DoctorLogin";
 import DoctorSignup from "./Components/DoctorSignup";
 import DoctorSlots from "./Components/DoctorSlots";
+import ConfirmAppointment from "./Components/ConfirmAppointment";
 
 
 function App() {
@@ -41,8 +42,11 @@ function App() {
         <Route path='/home/patient/:phone' element={<PatientHome/>} />
        <Route path='/preferences' element={<PatientPreferences/>} />
         <Route path='/hospitaldetails/:id' element={<HospitalDetails/>} />
-         <Route path='/departmentdoctors/:id' element={<DepartmentDoctors/>} />
-         <Route path='/slots/:id' element={<DoctorSlots/>} />
+         <Route path='/hospital/:hospitalId/department/:departmentId' element={<DepartmentDoctors/>} />
+         <Route path='/hospital/:hospitalId/doctor/:doctorId/slots' element={<DoctorSlots/>} />
+         <Route path="/confirm-appointment/:doctorId/:hospitalId/:date/:slot"element={<ConfirmAppointment />}
+/>
+
       </Routes>
     </>
   );

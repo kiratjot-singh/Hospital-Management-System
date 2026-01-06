@@ -63,8 +63,8 @@ export const login=async(req,res)=>{
       const token=jwt.sign({id:user._id},key,{expiresIn:"7d"});
       res.cookie("token",token,{
         httpOnly:true,
-        sameSite:"none",
-        secure :true
+        sameSite:"lax",
+        secure :false
       })
       return res.json({success:true,message:"LoggedIN successfully"});
     }catch(err){
@@ -75,6 +75,23 @@ export const login=async(req,res)=>{
   });
     }
 }
+
+export const protectPatient = (req, res, next) => {
+  const token = req.cookies.token; // 🔥 COOKIE
+
+  if (!token) {
+    return res.status(401).json({ message: "Not logged in" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET||"secretkey");
+    req.patientId = decoded.id;
+    next();
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+};
+
 
 export const getpatients = async (req, res) => {
   try {

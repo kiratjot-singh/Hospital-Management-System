@@ -14,15 +14,15 @@ const doctorSchema = new mongoose.Schema(
     password: { type: String },
     otp: { type: String },
     otpExpires: { type: Date },
-    qualifications:{type:String,required:true},
+    qualifications:{type:String,required:true,default:"MBBS"},
     hospital: { type: mongoose.Schema.Types.ObjectId, ref: "Hospital", required: true },
     experience: { type: Number, default: 0 },
     image: { type: String, default: "" }, // profile photo URL
     available: { type: Boolean, default: true }, // for receptionist toggle
     active: { type: Boolean, default: true }, // soft delete / disable doctor
     workingHours: {
-    start: { type: String, required: true }, // "10:00"
-    end: { type: String, required: true },   // "17:00"
+    start: { type: String, required: true,   default: "10:00", }, // "10:00"
+    end: { type: String, required: true , default: "17:00",},   // "17:00"
     },
     slotDuration: { type: Number, default: 15 } // minutes
 

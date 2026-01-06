@@ -1,41 +1,99 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 import "./DoctorSlots.css";
 
 const DoctorSlots = () => {
   const navigate = useNavigate();
+  const { doctorId, hospitalId } = useParams();
 
-  const dummySlots = [
-    "10:00 AM - 10:30 AM",
-    "10:30 AM - 11:00 AM",
-    "11:00 AM - 11:30 AM",
-    "11:30 AM - 12:00 PM",
-    "02:00 PM - 02:30 PM",
-    "02:30 PM - 03:00 PM",
-    "03:00 PM - 03:30 PM",
-  ];
+  const [date, setDate] = useState("");
+  const [slots, setSlots] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleBook = (slot) => {
-    navigate("/confirm-appointment", {
-      state: { slot },
-    });
-  };
+  useEffect(() => {
+    if (!date) return;
+
+    const fetchSlots = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const res = await axios.get(
+          "http://localhost:5000/api/appointments/doctor-slots",
+          {
+            params: {
+              doctor: doctorId,
+              hospital: hospitalId,
+              date,
+            },
+          }
+        );
+
+        if (res.data.success) {
+          setSlots(res.data.slots);
+        } else {
+          setError("Failed to load slots");
+        }
+      } catch (err) {
+        console.error(err);
+        setError("Server error while fetching slots");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSlots();
+  }, [date, doctorId, hospitalId]);
+
+  if (!doctorId || !hospitalId) {
+    return <h3 className="error-text">❌ Invalid doctor or hospital</h3>;
+  }
 
   return (
     <div className="slots-section">
-      <h2>Available Slots</h2>
+      <h2 className="title">Select Appointment Date</h2>
+
+      <input
+        type="date"
+        className="date-picker"
+        min={new Date().toISOString().split("T")[0]}
+        value={date}
+        onChange={(e) => setDate(e.target.value)}
+      />
+
+      {loading && <p className="info-text">Loading slots...</p>}
+      {error && <p className="error-text">{error}</p>}
+
+      {!loading && date && slots.length === 0 && (
+        <p className="info-text">No slots available</p>
+      )}
 
       <div className="slots-grid">
-        {dummySlots.map((slot, index) => (
-          <div className="slot-card" key={index}>
-            <span className="slot-time">{slot}</span>
+        {slots.map((item) => (
+          <div
+            key={item.slot}
+            className={`slot-card ${
+              item.status === "booked" ? "booked" : ""
+            }`}
+          >
+            <span className="slot-time">{item.slot}</span>
 
-            <button
-              className="slot-book-btn"
-              onClick={() => handleBook(slot)}
-            >
-              Book
-            </button>
+            {item.status === "booked" ? (
+              <span className="slot-booked">Booked</span>
+            ) : (
+              <button
+                className="slot-book-btn"
+               onClick={()=>{navigate(
+  `/confirm-appointment/${doctorId}/${hospitalId}/${date}/${encodeURIComponent(item.slot)}`
+);
+}}
+              >
+                Book
+              </button>
+            )}
           </div>
         ))}
       </div>
@@ -44,4 +102,3 @@ const DoctorSlots = () => {
 };
 
 export default DoctorSlots;
-

@@ -1,11 +1,7 @@
 import Appointment from "../models/Appointment.js";
 import Doctor from "../models/Doctor.js";
 
-/* ---------------------------------- */
-/* Utilities                          */
-/* ---------------------------------- */
-
-const generateSlots = (start, end, duration) => {
+export const generateSlots = (start, end, duration) => {
   const slots = [];
   let [h, m] = start.split(":").map(Number);
   let startMin = h * 60 + m;
@@ -13,21 +9,19 @@ const generateSlots = (start, end, duration) => {
   let [eh, em] = end.split(":").map(Number);
   let endMin = eh * 60 + em;
 
+  const format = (x) =>
+    String(Math.floor(x / 60)).padStart(2, "0") +
+    ":" +
+    String(x % 60).padStart(2, "0");
+
   while (startMin + duration <= endMin) {
-    const s = startMin;
-    const e = startMin + duration;
-
-    const format = (x) =>
-      String(Math.floor(x / 60)).padStart(2, "0") +
-      ":" +
-      String(x % 60).padStart(2, "0");
-
-    slots.push(`${format(s)}-${format(e)}`);
+    slots.push(`${format(startMin)}-${format(startMin + duration)}`);
     startMin += duration;
   }
 
   return slots;
 };
+
 
 const normalizeDate = (date) => {
   const d = new Date(date);
@@ -41,7 +35,9 @@ const normalizeDate = (date) => {
 
 export const bookAppointment = async (req, res) => {
   try {
-    const { doctor, patient, hospital, date, slot, reason } = req.body;
+   const { doctor, hospital, date, slot, reason } = req.body;
+const patient = req.patientId; 
+
 
     if (!doctor || !patient || !hospital || !date || !slot) {
       return res.status(400).json({ message: "Missing required fields." });
@@ -54,6 +50,16 @@ export const bookAppointment = async (req, res) => {
     if (bookingDate < new Date()) {
       return res.status(400).json({ message: "Cannot book appointment in the past." });
     }
+     if (
+  !doctorDoc.workingHours ||
+  !doctorDoc.workingHours.start ||
+  !doctorDoc.workingHours.end
+) {
+  return res.status(400).json({
+    success: false,
+    message: "Doctor working hours not configured",
+  });
+}
 
     const validSlots = generateSlots(
       doctorDoc.workingHours.start,
@@ -100,38 +106,24 @@ export const bookAppointment = async (req, res) => {
 };
 
 
-
-
-
 export const getDoctorSlots = async (req, res) => {
   try {
     const { doctor, hospital, date } = req.query;
 
     if (!doctor || !hospital || !date) {
-      return res.status(400).json({ success: false, message: "Missing parameters" });
+      return res.status(400).json({
+        success: false,
+        message: "Missing parameters",
+      });
     }
 
     const doctorDoc = await Doctor.findById(doctor);
-    if (!doctorDoc) return res.status(404).json({ success: false, message: "Doctor not found" });
-
-    const generateSlots = (start, end, duration) => {
-      const slots = [];
-      let [h, m] = start.split(":").map(Number);
-      let startMin = h * 60 + m;
-      let [eh, em] = end.split(":").map(Number);
-      let endMin = eh * 60 + em;
-
-      while (startMin + duration <= endMin) {
-        const s = startMin;
-        const e = startMin + duration;
-        const f = (x) =>
-          String(Math.floor(x / 60)).padStart(2, "0") + ":" + String(x % 60).padStart(2, "0");
-        slots.push(`${f(s)}-${f(e)}`);
-        startMin += duration;
-      }
-
-      return slots;
-    };
+    if (!doctorDoc) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor not found",
+      });
+    }
 
     const allSlots = generateSlots(
       doctorDoc.workingHours.start,
@@ -139,10 +131,9 @@ export const getDoctorSlots = async (req, res) => {
       doctorDoc.slotDuration || 15
     );
 
-    const dayStart = new Date(date);
-    dayStart.setHours(0, 0, 0, 0);
-    const dayEnd = new Date(dayStart);
-    dayEnd.setHours(23, 59, 59, 999);
+    /* 🔥 TIMEZONE-SAFE DATE */
+    const dayStart = new Date(`${date}T00:00:00.000Z`);
+    const dayEnd = new Date(`${date}T23:59:59.999Z`);
 
     const booked = await Appointment.find({
       doctor,
@@ -152,7 +143,9 @@ export const getDoctorSlots = async (req, res) => {
     }).populate("patient", "name");
 
     const bookedMap = {};
-    booked.forEach((b) => (bookedMap[b.slot] = b));
+    booked.forEach((b) => {
+      bookedMap[b.slot] = b;
+    });
 
     const slots = allSlots.map((s) => ({
       slot: s,
@@ -161,11 +154,16 @@ export const getDoctorSlots = async (req, res) => {
       appointmentId: bookedMap[s]?._id || null,
     }));
 
-    res.json({ success: true, slots });
+    return res.json({ success: true, slots });
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    console.error("❌ getDoctorSlots:", err);
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
 };
+
 
 /* ---------------------------------- */
 /* Get Free Slots                     */
