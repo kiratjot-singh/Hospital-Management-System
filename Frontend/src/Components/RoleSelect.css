@@ -84,3 +84,38 @@
     font-size: 15px;
   }
 }
+/* Layout wrapper */
+.role-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.role-options {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.role-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #cfe3f0;
+  background: white;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.login-page {
+  background: 
+    linear-gradient(rgba(232, 247, 249, 0.52), rgba(232, 247, 249, 0.52)),
+    url("https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=1600&q=80");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}

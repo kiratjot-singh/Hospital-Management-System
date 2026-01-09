@@ -6,34 +6,39 @@ const RoleSelect = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="role-page">
-      <div className="role-card">
-        <h1 className="role-title">Select Your Role</h1>
-        <p className="role-subtitle">Choose how you want to continue</p>
+    <div className="login-page">
+      <div className="login-card">
 
-        <div className="role-options">
-          <button
-            className="role-btn"
-            onClick={() => navigate("/login/receptionist")}
-          >
-            Receptionist
-          </button>
+        {/* Sidebar */}
+        <div className="login-left">
+        <img src="https://tse2.mm.bing.net/th/id/OIP.EqeLMDQOf9OzQS4qDXLU8wHaD1?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Hospital Logo" className="sidebar-logo" />
+        <h1 className="app-title">Hospital Management System</h1>
+        <p className="app-subtitle">Choose your role to continue</p>
+      </div>
 
-          <button
-            className="role-btn"
-            onClick={() => navigate("/login/doctor")}
-          >
-            Doctor
-          </button>
-          
+        {/* Right content */}
+        <div className="login-right fade-in">
+          <h2 className="login-title">Select Your Role</h2>
+          <p className="login-caption">How would you like to login?</p>
 
-          <button
-            className="role-btn"
-            onClick={() => navigate("/login/patient")}
-          >
-            Patient
-          </button>
+          <div className="role-options">
+            <button className="role-btn glow" onClick={() => navigate("/login/receptionist")}>
+              <img src="/receptionist.png" alt="" className="role-icon" />
+              Receptionist
+            </button>
+
+            <button className="role-btn glow" onClick={() => navigate("/login/doctor")}>
+              <img src="/doctor.png" alt="" className="role-icon" />
+              Doctor
+            </button>
+
+            <button className="role-btn glow" onClick={() => navigate("/login/patient")}>
+              <img src="/patient.png" alt="" className="role-icon" />
+              Patient
+            </button>
+          </div>
         </div>
+
       </div>
     </div>
   );
