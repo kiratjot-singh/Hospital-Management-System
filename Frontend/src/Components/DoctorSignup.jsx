@@ -9,90 +9,98 @@ const DoctorSignup = () => {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
 
-  const [hospitalId, setHospitalId] = useState("");
+  const [hospital, setHospital] = useState("");
   const [hospitals, setHospitals] = useState([]);
 
   const [departments, setDepartments] = useState([]);
   const [selectedDepartments, setSelectedDepartments] = useState([]);
   const [deptOpen, setDeptOpen] = useState(false);
 
-  // fetch hospitals
+  const [qualifications, setQualifications] = useState("MBBS");
+  const [experience, setExperience] = useState("");
+  const [startTime, setStartTime] = useState("10:00");
+  const [endTime, setEndTime] = useState("17:00");
+  const [slotDuration, setSlotDuration] = useState(15);
+
   useEffect(() => {
     const fetchHospitals = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/hospital/getHospitals");
-        const data = await res.json();
-        if (data.success) setHospitals(data.hospitals);
-      } catch (err) {
-        console.log(err);
-      }
+      const res = await fetch("http://localhost:5000/api/hospital/getHospitals");
+      const data = await res.json();
+      if (data.success) setHospitals(data.hospitals);
     };
     fetchHospitals();
   }, []);
 
-  // fetch departments on hospital select
   useEffect(() => {
-    if (!hospitalId) return;
-
+    if (!hospital) return;
     const fetchDepartments = async () => {
-      try {
-        const res = await fetch(
-          "http://localhost:5000/api/doctor/getDepartment",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ hospitalId }),
-          }
-        );
-        const data = await res.json();
-        if (data.success) setDepartments(data.departments);
-      } catch (err) {
-        console.log(err);
-      }
+      const res = await fetch("http://localhost:5000/api/doctor/getDepartment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hospitalId: hospital }),
+      });
+      const data = await res.json();
+      if (data.success) setDepartments(data.departments);
     };
-
     fetchDepartments();
     setSelectedDepartments([]);
-  }, [hospitalId]);
+  }, [hospital]);
 
   const toggleDepartment = (id) => {
     setSelectedDepartments((prev) =>
-      prev.includes(id)
-        ? prev.filter((d) => d !== id)
-        : [...prev, id]
+      prev.includes(id) ? prev.filter((d) => d !== id) : [...prev, id]
     );
   };
 
   const handleSignup = async () => {
-    if (!name || !phone || !password || !hospitalId || selectedDepartments.length === 0) {
-      return alert("Please fill all fields");
+    if (
+      !name ||
+      !phone ||
+      !password ||
+      !hospital ||
+      selectedDepartments.length === 0 ||
+      !startTime ||
+      !endTime
+    ) {
+      alert("Please fill all required fields");
+      return;
     }
+
+    const payload = {
+  name,
+  phone,
+  password,
+  hospitalId: hospital,
+  departments: selectedDepartments,
+  qualifications,
+  experience: Number(experience),
+  workingHours: {
+    start: startTime,
+    end: endTime,
+  },
+  slotDuration: Number(slotDuration),
+};
+
 
     try {
       const res = await fetch("http://localhost:5000/api/doctor/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          phone,
-          password,
-          hospitalId,
-          departments: selectedDepartments,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
       if (data.success) navigate("/login/doctor");
       else alert(data.message);
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      alert("Server error");
     }
   };
 
   return (
     <div className="login-page">
       <div className="login-card">
-
         <div className="login-left">
           <h1 className="app-title">Doctor Signup</h1>
           <p className="app-subtitle">Register doctor</p>
@@ -100,22 +108,23 @@ const DoctorSignup = () => {
 
         <div className="login-right">
           <div className="login-form">
-
-            <label className="input-label">Name</label>
+            <label>Name</label>
             <input value={name} onChange={(e) => setName(e.target.value)} />
 
-            <label className="input-label">Phone</label>
+            <label>Phone</label>
             <input value={phone} onChange={(e) => setPhone(e.target.value)} />
 
-            <label className="input-label">Password</label>
+            <label>Password</label>
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
 
-            <label className="input-label">Hospital</label>
-            <select
-              className="dropdown"
-              value={hospitalId}
-              onChange={(e) => setHospitalId(e.target.value)}
-            >
+            <label>Qualifications</label>
+            <input value={qualifications} onChange={(e) => setQualifications(e.target.value)} />
+
+            <label>Experience (years)</label>
+            <input type="number" value={experience} onChange={(e) => setExperience(e.target.value)} />
+
+            <label>Hospital</label>
+            <select value={hospital} onChange={(e) => setHospital(e.target.value)}>
               <option value="">Select Hospital</option>
               {hospitals.map((h) => (
                 <option key={h._id} value={h._id}>
@@ -124,17 +133,11 @@ const DoctorSignup = () => {
               ))}
             </select>
 
-            {/* ✅ CLEAN DEPARTMENT DROPDOWN */}
-            <label className="input-label">Departments</label>
-
-            <div
-              className="dropdown dept-select"
-              onClick={() => setDeptOpen(!deptOpen)}
-            >
+            <label>Departments</label>
+            <div className="dropdown" onClick={() => setDeptOpen(!deptOpen)}>
               {selectedDepartments.length === 0
                 ? "Select Departments"
                 : `${selectedDepartments.length} selected`}
-              <span className="arrow">▼</span>
             </div>
 
             {deptOpen && (
@@ -153,17 +156,21 @@ const DoctorSignup = () => {
               </div>
             )}
 
+            <label>Working Hours</label>
+            <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+            <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+
+            <label>Slot Duration (minutes)</label>
+            <input type="number" value={slotDuration} onChange={(e) => setSlotDuration(e.target.value)} />
+
             <button className="primary-btn" onClick={handleSignup}>
               Sign Up
             </button>
-
           </div>
         </div>
-
       </div>
     </div>
   );
 };
 
 export default DoctorSignup;
-
