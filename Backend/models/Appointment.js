@@ -33,7 +33,7 @@ const appointmentSchema = new mongoose.Schema(
     patient: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Patient",
-      required: true,
+
     },
     hospital: {
       type: mongoose.Schema.Types.ObjectId,

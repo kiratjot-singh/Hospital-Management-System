@@ -1,10 +1,25 @@
 import express from "express";
-import { getHospitalDetails, login, signup ,getpatients } from "../controllers/patientController.js";
-const router=express.Router();
+import {
+  getHospitalDetails,
+  login,
+  signup,
+  getpatients,
+  getMyPatientProfile,
+  protectPatient
+} from "../controllers/patientController.js";
 
-router.route('/signup').post(signup);
-router.route('/login').post(login);
-router.route('/hospitaldetails/:id').get(getHospitalDetails);
-router.route('/').get(getpatients)
+const router = express.Router();
 
-export default router
+router.post("/signup", signup);
+router.post("/login", login);
+
+// 🔐 Logged-in patient profile
+router.get("/me", getMyPatientProfile);
+
+// Hospital details
+router.get("/hospitaldetails/:id", getHospitalDetails);
+
+// All patients (admin or general)
+router.get("/", getpatients);
+
+export default router;

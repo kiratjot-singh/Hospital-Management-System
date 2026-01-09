@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -22,7 +21,7 @@ const DoctorSlots = () => {
         setError("");
 
         const res = await axios.get(
-          "http://localhost:5000/api/appointments/doctor-slots",
+          "http://localhost:5000/api/appointments/free-slots",
           {
             params: {
               doctor: doctorId,
@@ -33,7 +32,7 @@ const DoctorSlots = () => {
         );
 
         if (res.data.success) {
-          setSlots(res.data.slots);
+          setSlots(res.data.freeSlots || []);
         } else {
           setError("Failed to load slots");
         }
@@ -72,28 +71,22 @@ const DoctorSlots = () => {
       )}
 
       <div className="slots-grid">
-        {slots.map((item) => (
-          <div
-            key={item.slot}
-            className={`slot-card ${
-              item.status === "booked" ? "booked" : ""
-            }`}
-          >
-            <span className="slot-time">{item.slot}</span>
+        {slots.map((slot) => (
+          <div key={slot} className="slot-card">
+            <span className="slot-time">{slot}</span>
 
-            {item.status === "booked" ? (
-              <span className="slot-booked">Booked</span>
-            ) : (
-              <button
-                className="slot-book-btn"
-               onClick={()=>{navigate(
-  `/confirm-appointment/${doctorId}/${hospitalId}/${date}/${encodeURIComponent(item.slot)}`
-);
-}}
-              >
-                Book
-              </button>
-            )}
+            <button
+              className="slot-book-btn"
+              onClick={() => {
+                navigate(
+                  `/confirm-appointment/${doctorId}/${hospitalId}/${date}/${encodeURIComponent(
+                    slot
+                  )}`
+                );
+              }}
+            >
+              Book
+            </button>
           </div>
         ))}
       </div>

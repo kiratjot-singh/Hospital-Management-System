@@ -35,9 +35,7 @@ const normalizeDate = (date) => {
 
 export const bookAppointment = async (req, res) => {
   try {
-   const { doctor, hospital, date, slot, reason } = req.body;
-const patient = req.patientId; 
-
+    const { doctor, hospital, date, slot, reason, patient } = req.body;
 
     if (!doctor || !patient || !hospital || !date || !slot) {
       return res.status(400).json({ message: "Missing required fields." });
@@ -50,16 +48,10 @@ const patient = req.patientId;
     if (bookingDate < new Date()) {
       return res.status(400).json({ message: "Cannot book appointment in the past." });
     }
-     if (
-  !doctorDoc.workingHours ||
-  !doctorDoc.workingHours.start ||
-  !doctorDoc.workingHours.end
-) {
-  return res.status(400).json({
-    success: false,
-    message: "Doctor working hours not configured",
-  });
-}
+
+    if (!doctorDoc.workingHours?.start || !doctorDoc.workingHours?.end) {
+      return res.status(400).json({ message: "Doctor working hours not configured" });
+    }
 
     const validSlots = generateSlots(
       doctorDoc.workingHours.start,

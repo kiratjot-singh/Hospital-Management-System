@@ -5,37 +5,35 @@ import "./ConfirmAppointment.css";
 
 const ConfirmAppointment = () => {
   const navigate = useNavigate();
-  const { doctorId, hospitalId, date } = useParams();
-  const params=useParams();
-const slot = decodeURIComponent(params.slot);
+  const { doctorId, hospitalId, date, slot } = useParams();
+  const decodedSlot = decodeURIComponent(slot);
+
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const patientId = localStorage.getItem("patientId");
 
-  if (!doctorId || !hospitalId || !date || !slot) {
+  if (!doctorId || !hospitalId || !date || !decodedSlot || !patientId) {
     return <h3 className="error-text">❌ Invalid appointment data</h3>;
   }
-
 
   const handleConfirm = async () => {
     try {
       setLoading(true);
       setError("");
 
-      const res = await axios.post("http://localhost:5000/api/appointments/book",
-  {
-    doctor: doctorId,
-    hospital: hospitalId,
-    date,
-    slot,
-    reason,
-  },
-  {
-    withCredentials: true, 
-  }
-);
+      const res = await axios.post(
+        "http://localhost:5000/api/appointments/book",
+        {
+          doctor: doctorId,
+          hospital: hospitalId,
+          date,
+          slot: decodedSlot,
+          reason,
+          patient: patientId, // 🔥 added
+        }
+      );
 
       if (res.data.success) {
         alert("✅ Appointment booked successfully");
@@ -55,7 +53,7 @@ const slot = decodeURIComponent(params.slot);
 
       <div className="summary-card">
         <p><strong>Date:</strong> {date}</p>
-        <p><strong>Slot:</strong> {slot}</p>
+        <p><strong>Slot:</strong> {decodedSlot}</p>
       </div>
 
       <textarea
@@ -66,11 +64,7 @@ const slot = decodeURIComponent(params.slot);
 
       {error && <p className="error-text">{error}</p>}
 
-      <button
-        className="confirm-btn"
-        onClick={handleConfirm}
-        disabled={loading}
-      >
+      <button className="confirm-btn" onClick={handleConfirm} disabled={loading}>
         {loading ? "Booking..." : "Confirm Appointment"}
       </button>
     </div>

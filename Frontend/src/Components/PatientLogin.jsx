@@ -29,27 +29,35 @@ const PatientLogin = () => {
   };
 
   // ----- PASSWORD LOGIN -----
-  const handlePasswordLogin = async(e) => {
-    e.preventDefault();
-    try{
-     const res=await axios.post("http://127.0.0.1:5000/api/patient/login",{
-       phonenumber:phone,
-       password:password
-     })
-     if(res.data.success){
-       setMesg(res.data.message);
-       navigate(`/home/patient/${phone}`);
-     }else{
+ const handlePasswordLogin = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await axios.post(
+      "http://localhost:5000/api/patient/login",
+      {
+        phonenumber: phone,
+        password: password,
+      },
+      { withCredentials: true }
+    );
+
+    if (res.data.success) {
+      const patientId = res.data.patient.id;
+      localStorage.setItem("patientId", patientId);
+
       setMesg(res.data.message);
-     }
-    }catch(err){
-      const msg =
-    err.response?.data?.message ||
-    "Something went wrong. Please try again.";
-    console.log(err);
-  setMesg(msg);
+      navigate(`/home/patient/${phone}`);
+    } else {
+      setMesg(res.data.message);
     }
-  };
+  } catch (err) {
+    const msg =
+      err.response?.data?.message ||
+      "Something went wrong. Please try again.";
+    console.log(err);
+    setMesg(msg);
+  }
+};
 
   const switchToOtp = () => {
     setMode("otp");

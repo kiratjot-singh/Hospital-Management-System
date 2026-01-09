@@ -1,20 +1,30 @@
 import express from "express";
 import {
   bookAppointment,
+  getDoctorSlots,
   getFreeSlots,
   getDoctorAppointments,
   getPatientAppointments,
-  updateAppointmentStatus,
-  getDoctorSlots
-} from "../controllers/appointmentController.js"; 
+  updateAppointmentStatus
+} from "../controllers/appointmentController.js";
 import { protectPatient } from "../controllers/patientController.js";
 
 const router = express.Router();
 
-router.post("/book", protectPatient, bookAppointment);
+// 🔐 Protected booking route
+router.post("/book", bookAppointment);
+
+// Public routes
+router.get("/slots", getDoctorSlots);
 router.get("/free-slots", getFreeSlots);
+
+// Doctor views
 router.get("/doctor/:doctorId", getDoctorAppointments);
+
+// Patient views
 router.get("/patient/:patientId", getPatientAppointments);
+
+// Update status
 router.patch("/:id/status", updateAppointmentStatus);
-router.get("/doctor-slots", getDoctorSlots);
+
 export default router;
