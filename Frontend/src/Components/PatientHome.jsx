@@ -5,7 +5,8 @@ import axios from "axios";
 
 const PatientHome = () => {
   const [search, setSearch] = useState("");
-  const username = "Opinder";
+const [username, setUsername] = useState("");
+const [patientId, setPatientId] = useState(null);
   const [hospitals,setHospitals]=useState([]);
   const {phone}=useParams();
   const navigate=useNavigate();
@@ -22,6 +23,24 @@ const PatientHome = () => {
     }
     gethospitals();
   },[phone])
+  useEffect(() => {
+  const fetchProfile = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/patient/me",
+        { withCredentials: true }
+      );
+
+      setPatientId(res.data.patient._id);
+      setUsername(res.data.patient.name);
+    } catch(err) {
+      console.log(err);
+    }
+  };
+
+  fetchProfile();
+}, []);
+
 
   const filtered = hospitals.filter(h =>
     h.name.toLowerCase().includes(search.toLowerCase())
@@ -34,9 +53,17 @@ const PatientHome = () => {
           <div className="nav-left">Hi, {username}</div>
 
           <div className="nav-right">
-            <button className="nav-btn"> Booked Appointments</button>
-            <button className="nav-btn">Saved Hospitals</button>
-            <button className="nav-btn">My Reports</button>
+            {/* <button className="nav-btn"  onClick={() => navigate(`/appointments/${patientId}`)}> Booked Appointments</button> */}
+            {/* <button className="nav-btn">Saved Hospitals</button> */}
+            {/* <button className="nav-btn">My Reports</button> */}
+            <button
+  className="nav-btn"
+  disabled={!patientId}
+  onClick={() => navigate(`/appointments/${patientId}`)}
+>
+  Booked Appointments
+</button>
+
             <div className="profile-logo">👤</div>
           </div>
         </div>

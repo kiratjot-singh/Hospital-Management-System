@@ -33,7 +33,7 @@ const DoctorLogin = () => {
 
         if (data.success) {
           alert("Login successful!");
-          navigate(`/home/doctor/${phone}`);
+          navigate(`/doctor/${phone}`);
         } else {
           alert(data.message || "Login failed");
         }

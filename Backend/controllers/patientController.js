@@ -69,7 +69,7 @@ export const login = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "none",
+      sameSite: "lax",
       secure: false,
       path: "/",
     });
@@ -154,3 +154,4 @@ export const getHospitalDetails = async (req, res) => {
     return res.json({ success: false, message: "Server error" });
   }
 };
+

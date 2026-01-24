@@ -225,15 +225,28 @@ export const getPatientAppointments = async (req, res) => {
   try {
     const { patientId } = req.params;
 
-    const appointments = await Appointment.find({ patient: patientId })
+    if (!patientId || patientId === "null") {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid patientId",
+      });
+    }
+
+    const appointments = await Appointment.find({
+      patient: patientId,
+    })
       .populate("doctor")
       .sort({ date: 1 });
 
     res.json({ success: true, appointments });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
   }
 };
+
+
+
 
 /* ---------------------------------- */
 /* Update Appointment Status          */

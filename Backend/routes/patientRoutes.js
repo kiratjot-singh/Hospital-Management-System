@@ -5,7 +5,7 @@ import {
   signup,
   getpatients,
   getMyPatientProfile,
-  protectPatient
+  protectPatient,
 } from "../controllers/patientController.js";
 
 const router = express.Router();
@@ -14,7 +14,7 @@ router.post("/signup", signup);
 router.post("/login", login);
 
 // 🔐 Logged-in patient profile
-router.get("/me", getMyPatientProfile);
+router.get("/me",protectPatient, getMyPatientProfile);
 
 // Hospital details
 router.get("/hospitaldetails/:id", getHospitalDetails);
