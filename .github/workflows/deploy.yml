@@ -22,10 +22,10 @@ jobs:
 
       - name: Pull latest code on EC2
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "
-            cd ~/Hospital-Management-System &&
-            git pull origin main
-          "
+          ssh -o StrictHostKeyChecking=no \
+              -i ~/.ssh/deploy_key.pem \
+              ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+              'cd ~/Hospital-Management-System && git pull origin main'
 
       - name: Rebuild and restart Docker containers
         run: |
