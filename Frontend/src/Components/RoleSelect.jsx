@@ -13,7 +13,7 @@ const RoleSelect = () => {
         <div className="login-left">
         <img src="https://tse2.mm.bing.net/th/id/OIP.EqeLMDQOf9OzQS4qDXLU8wHaD1?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Hospital Logo" className="sidebar-logo" />
         <h1 className="app-title">Hospital Management System</h1>
-        <p className="app-subtitle">Choose your role to continue</p>
+        <p className="app-subtitle">Choose your role to continue github action done</p>
       </div>
 
         {/* Right content */}
