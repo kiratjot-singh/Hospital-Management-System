@@ -37,7 +37,7 @@ const ConfirmAppointment = () => {
 
       if (res.data.success) {
         alert("✅ Appointment booked successfully");
-        navigate("/my-appointments");
+        navigate(`/appointments/${patientId}`)
       }
     } catch (err) {
       console.error(err);

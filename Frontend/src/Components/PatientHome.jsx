@@ -64,7 +64,13 @@ const [patientId, setPatientId] = useState(null);
   Booked Appointments
 </button>
 
-            <div className="profile-logo">👤</div>
+            <div 
+  className="profile-logo" 
+  onClick={() => navigate(`/patient/me/${patientId}`)}
+  style={{ cursor: "pointer" }}
+>
+  👤
+</div>
           </div>
         </div>
       </header>
@@ -103,6 +109,7 @@ const [patientId, setPatientId] = useState(null);
 };
 
 export default PatientHome;
+
 
 
 

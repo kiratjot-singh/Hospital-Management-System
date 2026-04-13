@@ -1,0 +1,130 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.profile-page {
+  min-height: 100vh;
+  background-color: #E8F7F9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 1rem;
+}
+
+.profile-back-btn {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: #58A7CA;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.profile-back-btn:hover {
+  color: #4A94B5;
+  text-decoration: underline;
+}
+
+.profile-card {
+  background: #ffffff;
+  border-radius: 26px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  width: 100%;
+  max-width: 420px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.profile-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.12);
+}
+
+.profile-avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.profile-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 18px;
+  background: #58A7CA;
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.profile-name {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #124F68;
+  margin: 0;
+}
+
+.profile-divider {
+  border: none;
+  border-top: 1px solid #E8F7F9;
+  margin: 0 0 1.5rem 0;
+}
+
+.profile-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profile-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.profile-info-label {
+  font-size: 0.75rem;
+  color: #6A7A86;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.profile-info-value {
+  font-size: 1rem;
+  color: #35566B;
+  font-weight: 500;
+}
+
+.profile-state {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6A7A86;
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .profile-page {
+    padding: 16px 1rem;
+  }
+
+  .profile-card {
+    padding: 1.5rem;
+  }
+
+  .profile-avatar {
+    width: 72px;
+    height: 72px;
+    font-size: 1.5rem;
+  }
+}

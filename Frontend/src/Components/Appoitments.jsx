@@ -44,7 +44,7 @@ const Appointments = () => {
             <h3>Dr. {app.doctor.name}</h3>
             <p><b>Specialization:</b> {app.doctor.specialization}</p>
             <p><b>Date:</b> {new Date(app.date).toLocaleDateString()}</p>
-            <p><b>Time:</b> {app.time}</p>
+            <p><b>Time:</b> {app.slot}</p>
             <span className={`status ${app.status}`}>
               {app.status}
             </span>
