@@ -24,7 +24,7 @@ const navigate=useNavigate();
   }
 
   try {
-   const res=await axios.post("http://127.0.0.1:5000/api/patient/signup",{
+   const res=await axios.post(`${import.meta.env.VITE_API_BASE_URL}/patient/signup`,{
      name: fullName,
   phonenumber: phone,
   password: password,

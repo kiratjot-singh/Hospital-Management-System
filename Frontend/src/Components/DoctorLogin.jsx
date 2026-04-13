@@ -23,7 +23,7 @@ const DoctorLogin = () => {
       if (!password) return alert("Please enter password");
 
       try {
-        const response = await fetch("http://localhost:5000/api/doctor/login", {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctor/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ phone, password })

@@ -24,7 +24,7 @@ const ConfirmAppointment = () => {
       setError("");
 
       const res = await axios.post(
-        "http://localhost:5000/api/appointments/book",
+        `${import.meta.env.VITE_API_BASE_URL}/appointments/book`,
         {
           doctor: doctorId,
           hospital: hospitalId,

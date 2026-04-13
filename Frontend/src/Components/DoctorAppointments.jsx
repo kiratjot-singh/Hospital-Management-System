@@ -22,7 +22,7 @@ const DoctorAppointments = () => {
     try {
       setLoading(true);
       const res = await fetch(
-        `http://localhost:5000/api/appointments/slots?doctor=${id}&hospital=${hospitalId}&date=${date}`
+        `${import.meta.env.VITE_API_BASE_URL}/appointments/slots?doctor=${id}&hospital=${hospitalId}&date=${date}`
       );
       const data = await res.json();
       if (data.success) setSlots(data.slots);
@@ -39,7 +39,7 @@ const DoctorAppointments = () => {
   }, [id, date, hospitalId]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/patient")
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/patient`)
       .then((r) => r.json())
       .then((d) => setPatients(d.patients || []));
   }, []);
@@ -49,7 +49,7 @@ const DoctorAppointments = () => {
 
     try {
       setBooking(true);
-      const res = await fetch("http://localhost:5000/api/appointments/book", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/appointments/book`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

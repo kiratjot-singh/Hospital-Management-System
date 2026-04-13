@@ -15,7 +15,7 @@ const ReceptionistHome = () => {
     const fetchName = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5000/api/receptionist/getname",
+          `${import.meta.env.VITE_API_BASE_URL}/receptionist/getname`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

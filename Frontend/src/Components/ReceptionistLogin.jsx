@@ -20,7 +20,7 @@ const ReceptionistLogin = () => {
   // ==========================================================
   const fetchHospitals = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/hospital/getHospitals");
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/hospital/getHospitals`);
       const data = await res.json();
       if (data.success) setHospitals(data.hospitals);
     } catch (err) {
@@ -38,7 +38,7 @@ const ReceptionistLogin = () => {
   const handleSendOtp = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:5000/api/receptionist/send-email-otp", {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/receptionist/send-email-otp`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ phone }),
@@ -55,7 +55,7 @@ const ReceptionistLogin = () => {
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:5000/api/receptionist/verify-email-otp", {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/receptionist/verify-email-otp`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ phone, otp }),
@@ -73,7 +73,7 @@ const ReceptionistLogin = () => {
   const handlePasswordLogin = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:5000/api/receptionist/login-password", {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/receptionist/login-password`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ phone, password }),
@@ -100,7 +100,7 @@ const ReceptionistLogin = () => {
       password: form.get("password"),
     };
 
-    const res = await fetch("http://localhost:5000/api/receptionist/signup", {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/receptionist/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

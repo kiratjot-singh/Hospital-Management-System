@@ -24,7 +24,7 @@ const DoctorSignup = () => {
 
   useEffect(() => {
     const fetchHospitals = async () => {
-      const res = await fetch("http://localhost:5000/api/hospital/getHospitals");
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/hospital/getHospitals`);
       const data = await res.json();
       if (data.success) setHospitals(data.hospitals);
     };
@@ -34,7 +34,7 @@ const DoctorSignup = () => {
   useEffect(() => {
     if (!hospital) return;
     const fetchDepartments = async () => {
-      const res = await fetch("http://localhost:5000/api/doctor/getDepartment", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctor/getDepartment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ hospitalId: hospital }),
@@ -83,7 +83,7 @@ const DoctorSignup = () => {
 
 
     try {
-      const res = await fetch("http://localhost:5000/api/doctor/signup", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctor/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

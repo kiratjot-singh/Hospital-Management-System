@@ -33,7 +33,7 @@ const PatientLogin = () => {
   e.preventDefault();
   try {
     const res = await axios.post(
-      "http://localhost:5000/api/patient/login",
+      `${import.meta.env.VITE_API_BASE_URL}/patient/login`,
       {
         phonenumber: phone,
         password: password,

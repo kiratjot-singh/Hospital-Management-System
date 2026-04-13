@@ -21,7 +21,7 @@ const DoctorSlots = () => {
         setError("");
 
         const res = await axios.get(
-          "http://localhost:5000/api/appointments/free-slots",
+          `${import.meta.env.VITE_API_BASE_URL}/appointments/free-slots`,
           {
             params: {
               doctor: doctorId,

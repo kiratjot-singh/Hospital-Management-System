@@ -12,7 +12,7 @@ const PatientProfile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/patient/me", {
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/patient/me`, {
           withCredentials: true,
         });
         setPatient(res.data.patient);

@@ -17,7 +17,7 @@ const DoctorPage = () => {
   useEffect(() => {
     const fetchDoctor = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/doctor/getDoctor/${id}`);
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctor/getDoctor/${id}`);
         const data = await res.json();
         if (data.success) setDoctor(data.doctor);
       } catch (err) {
@@ -32,7 +32,7 @@ const DoctorPage = () => {
 
   const toggleAvailability = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/receptionist/${id}/availability`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/receptionist/${id}/availability`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ available: !doctor.available }),

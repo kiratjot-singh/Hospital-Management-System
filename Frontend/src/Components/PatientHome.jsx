@@ -13,7 +13,7 @@ const [patientId, setPatientId] = useState(null);
   useEffect(()=>{
     const gethospitals=async()=>{
    try{
-   const res=await axios.get("http://localhost:5000/api/hospital/getHospitals");
+   const res=await axios.get(`${import.meta.env.VITE_API_BASE_URL}/hospital/getHospitals`);
     if(res.data.success){
       setHospitals(res.data.hospitals);
     }
@@ -27,7 +27,7 @@ const [patientId, setPatientId] = useState(null);
   const fetchProfile = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/patient/me",
+        `${import.meta.env.VITE_API_BASE_URL}/patient/me`,
         { withCredentials: true }
       );
 

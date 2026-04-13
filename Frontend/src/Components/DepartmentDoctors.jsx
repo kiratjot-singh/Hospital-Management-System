@@ -16,7 +16,7 @@ const hospitalId = useParams().hospitalId;
     const fetchDoctors = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/doctor/deptdoctors/${departmentId}`
+          `${import.meta.env.VITE_API_BASE_URL}/doctor/deptdoctors/${departmentId}`
         );
 
         if (res.data.success) {

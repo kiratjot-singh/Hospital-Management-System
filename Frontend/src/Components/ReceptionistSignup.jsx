@@ -14,7 +14,7 @@ const PatientSignup = () => {
   const [hospitals, setHospitals] = useState([]);
 
 const fetchHospitals = async () => {
-  const res = await fetch("http://localhost:5000/api/hospital/getHospitals");
+  const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/hospital/getHospitals`);
   const data = await res.json();
   if (data.success) setHospitals(data.hospitals);
 };
