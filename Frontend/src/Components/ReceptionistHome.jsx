@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, Calendar, Stethoscope, Building, Users, Clock, AlertCircle } from "lucide-react";
+import Navbar from "./Navbar";
 import "./ReceptionistHome.css";
 
 const ReceptionistHome = () => {
@@ -10,10 +13,12 @@ const ReceptionistHome = () => {
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState("");
   const [date, setDate] = useState(() => new Date().toISOString().split("T")[0]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchName = async () => {
       try {
+        setIsLoading(true);
         const response = await fetch(
           `${import.meta.env.VITE_API_BASE_URL}/receptionist/getname`,
           {
@@ -33,6 +38,8 @@ const ReceptionistHome = () => {
       } catch (error) {
         console.log(error);
         setUsername("Receptionist");
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -46,66 +53,130 @@ const ReceptionistHome = () => {
   );
 
   return (
-    <div className="home-page">
-      <header className="navbar">
-        <div className="nav-inner">
-          <div className="nav-left">Hi, {username}</div>
+    <div className="receptionist-layout">
+      <Navbar userName={username} role="receptionist" phone={phone} />
 
-          <div className="nav-right">
-            <button className="nav-btn">Booked Appointments</button>
-            <button className="nav-btn">My Reports</button>
-            <button className="nav-btn">👤</button>
-          </div>
-        </div>
-      </header>
+      <main className="receptionist-container">
+        {/* HOSPITAL SUMMARY BANNER */}
+        {user?.hospital && (
+          <motion.section 
+            className="hospital-hero-banner"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="banner-info-left">
+              <div className="badge-accent">
+                <Building size={14} /> Assigned Base Hospital
+              </div>
+              <h1>{user.hospital.name}</h1>
+              <p className="hospital-area">📍 {user.hospital.area || "City Campus"}</p>
+            </div>
 
-      <section className="search-section">
-        <div className="search-inner">
-          <div className="search-box">
-            <span className="search-icon">🔍</span>
+            <div className="banner-stats-right">
+              <div className="stat-card glass-panel">
+                <Users size={20} />
+                <div>
+                  <span className="stat-num">{Doctors.length}</span>
+                  <span className="stat-label">Doctors</span>
+                </div>
+              </div>
+              <div className="stat-card glass-panel">
+                <Calendar size={20} />
+                <div>
+                  <span className="stat-num">{date}</span>
+                  <span className="stat-label">Active Schedule</span>
+                </div>
+              </div>
+            </div>
+          </motion.section>
+        )}
+
+        {/* SEARCH & FILTERS CONTROLS */}
+        <section className="search-filter-section glass-panel">
+          <div className="search-box-wrapper no-border">
+            <Search className="search-box-icon" />
             <input
               type="text"
-              placeholder="Search Doctor Name"
+              placeholder="Search Doctor by Name..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
 
-          <input
-            type="date"
-            className="date-picker"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
-        </div>
-      </section>
+          <div className="date-picker-wrapper">
+            <Calendar size={18} className="date-picker-icon" />
+            <input
+              type="date"
+              className="inline-date-picker"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
+          </div>
+        </section>
 
-      <main className="content">
-        <h2>Doctors Assigned</h2>
+        {/* DOCTORS GRID */}
+        <section className="doctors-list-block">
+          <h2>Assigned Doctors</h2>
 
-        <div className="Doctor-list">
-          {filtered.length > 0 ? (
-            filtered.map((d) => (
-              <div key={d._id} className="Doctor-row">
-                <div>
-                  <h3>{d.name}</h3>
-                  <span>{d.specialty || d.area || "-"}</span>
+          {isLoading ? (
+            <div className="loading-grid">
+              {[1, 2].map(n => (
+                <div key={n} className="doctor-item-row skeleton-loading">
+                  <div className="skeleton skeleton-avatar"></div>
+                  <div className="skeleton skeleton-title"></div>
                 </div>
-
-                <button
-  className="view-btn"
-  onClick={() =>
-    navigate(`/doctor/${d._id}?hospital=${user.hospital._id}&date=${date}`)
-  }
->
-  View 
-</button>
-              </div>
-            ))
+              ))}
+            </div>
           ) : (
-            <p>No doctors found</p>
+            <div className="doctor-rows-list">
+              <AnimatePresence>
+                {filtered.length > 0 ? (
+                  filtered.map((d, index) => (
+                    <motion.div 
+                      key={d._id} 
+                      className="doctor-item-row glass-panel"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.05 }}
+                    >
+                      <div className="doctor-row-left">
+                        <div className="doctor-avatar-circle">
+                          <Stethoscope size={20} />
+                        </div>
+                        <div>
+                          <h3>{d.name}</h3>
+                          <span className="specialty-subtext">{d.specialty || d.area || "General Practitioner"}</span>
+                        </div>
+                      </div>
+
+                      <div className="doctor-row-right">
+                        <span className={`availability-tag ${d.available ? "online" : "offline"}`}>
+                          {d.available ? "Active" : "Away"}
+                        </span>
+                        
+                        <button
+                          className="btn btn-primary"
+                          onClick={() =>
+                            navigate(`/doctor/${d._id}?hospital=${user.hospital._id}&date=${date}`)
+                          }
+                        >
+                          Manage Schedule
+                        </button>
+                      </div>
+                    </motion.div>
+                  ))
+                ) : (
+                  <div className="empty-inline-box glass-panel">
+                    <AlertCircle size={32} />
+                    <p>No doctors match your search or are assigned to this facility.</p>
+                  </div>
+                )}
+              </AnimatePresence>
+            </div>
           )}
-        </div>
+        </section>
       </main>
     </div>
   );

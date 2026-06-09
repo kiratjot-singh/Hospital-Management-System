@@ -1,250 +1,327 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-}
-
-html,
-body {
-  width: 100%;
-  overflow-x: hidden;
-}
-
-/* ================= PAGE ================= */
-
 .home-page {
   min-height: 100vh;
-  width: 100%;
-  background-color: #E8F7F9;
-  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-app);
 }
 
-/* ================= NAVBAR ================= */
-
-.navbar {
+.home-container {
+  max-width: 1280px;
   width: 100%;
-  background: transparent;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
-.nav-inner {
-  width: calc(100% - 64px);
-  margin: 20px auto 0;
-  height: 64px;
-  padding: 0 28px;
+/* Hero Banner */
+.hero-banner {
+  position: relative;
+  overflow: hidden;
+  padding: 3.5rem 3rem;
+  background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.95), rgba(var(--secondary-rgb), 0.95));
+  border-radius: var(--radius-xl);
+  color: #ffffff;
+  box-shadow: var(--shadow-md);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background-color: #ffffff;
-  border-radius: 28px;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
 }
 
-.nav-left {
+.hero-text-content {
+  position: relative;
+  z-index: 10;
+  max-width: 600px;
+}
+
+.badge-accent {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+  color: #ffffff;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  margin-bottom: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.hero-text-content h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.hero-text-content p {
   font-size: 1.05rem;
-  font-weight: 600;
-  color: #124F68;
+  line-height: 1.6;
+  opacity: 0.9;
 }
 
-.nav-right {
+.hero-bg-shapes .shape {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.shape-1 {
+  width: 250px;
+  height: 250px;
+  background-color: #10b981;
+  top: -50px;
+  right: -50px;
+}
+
+.shape-2 {
+  width: 200px;
+  height: 200px;
+  background-color: #0ea5e9;
+  bottom: -50px;
+  right: 150px;
+}
+
+/* Search Bar */
+.search-section {
+  width: 100%;
+}
+
+.search-box-wrapper {
   display: flex;
   align-items: center;
-  gap: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 0.85rem 1.25rem;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
+  position: relative;
 }
 
-.nav-btn {
-  background: transparent;
+.search-box-wrapper:focus-within {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.12), var(--shadow-md);
+}
+
+.search-box-icon {
+  color: var(--text-muted);
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+}
+
+.search-box-wrapper input {
   border: none;
-  padding: 8px 14px;
-  border-radius: 999px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #124F68;
-  cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  outline: none;
+  background: transparent;
+  color: var(--text-main);
+  font-size: 1.05rem;
+  flex: 1;
+  width: 100%;
 }
 
-.nav-btn:hover {
-  background-color: #58A7CA;
-  color: #ffffff;
-}
-
-.profile-logo {
-  width: 40px;
-  height: 40px;
+.clear-search-btn {
+  background: var(--border);
+  border: none;
+  width: 1.5rem;
+  height: 1.5rem;
   border-radius: 50%;
-  background-color: #58A7CA;
-  color: #ffffff;
+  color: var(--text-muted);
+  font-size: 0.8rem;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: all var(--transition-fast);
 }
 
-/* ================= SEARCH ================= */
-
-.search-section {
-  width: 100%;
-  padding: 26px 0 10px;
+.clear-search-btn:hover {
+  background-color: var(--text-muted);
+  color: var(--bg-card);
 }
 
-.search-inner {
-  width: calc(100% - 64px);
-  margin: 0 auto;
-}
-
-.search-box {
-  width: 100%;
-  background-color: #ffffff;
-  border-radius: 28px;
-  padding: 18px 22px;
+/* Section Header */
+.section-header-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
-}
-
-.search-icon {
-  font-size: 1.2rem;
-  color: #6A7A86;
-}
-
-.search-box input {
-  flex: 1;
-  border: none;
-  outline: none;
-  font-size: 1.05rem;
-  background: transparent;
-}
-
-/* ================= CONTENT ================= */
-
-.content {
-  width: calc(100% - 64px);
-  margin: 0 auto;
-  padding: 18px 0 40px;
-}
-
-.content h2 {
-  font-size: 1.6rem;
-  font-weight: 600;
-  color: #124F68;
-  margin-bottom: 22px;
-  text-align: center;
-}
-
-/* ================= HOSPITAL GRID ================= */
-
-.hospital-list {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
-}
-
-/* ================= HOSPITAL CARD ================= */
-
-.hospital-row {
-  background-color: #ffffff;
-  border-radius: 28px;
-  padding: 22px;
-  display: flex;
   justify-content: space-between;
-  align-items: center;
-
-  /* softer base shadow */
-  box-shadow: 0 8px 22px rgba(18, 79, 104, 0.12);
-
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease,
-    background 0.25s ease;
+  margin-bottom: 1.5rem;
 }
 
-/* 🔥 SAME hover as doctor-card */
-.hospital-row:hover {
-  transform: translateY(-6px);
-  background: #f1fbff;
-  box-shadow: 0 18px 42px rgba(18, 79, 104, 0.22);
+.section-header-row h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-main);
 }
 
-.hospital-row:active {
-  transform: translateY(-2px) scale(0.98);
-}
-
-.hospital-row h3 {
-  font-size: 1.05rem;
-  color: #124F68;
-}
-
-.hospital-row span {
-  font-size: 0.85rem;
-  color: #6A7A86;
-}
-
-/* ================= BUTTON ================= */
-
-.view-btn {
-  background-color: #58A7CA;
-  color: #ffffff;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 999px;
-  font-size: 0.85rem;
+.count-badge {
+  font-size: 0.8rem;
   font-weight: 600;
-  cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.15s ease;
+  color: var(--primary);
+  background-color: var(--primary-light);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(var(--primary-rgb), 0.08);
 }
 
-.view-btn:hover {
-  background-color: #4A94B5;
-  box-shadow: 0 8px 18px rgba(88, 167, 202, 0.45);
-  transform: translateY(-1px);
+/* Hospital Grid */
+.hospital-grid, .loading-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
 }
 
-.view-btn:active {
-  transform: scale(0.96);
+.hospital-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition-normal);
 }
 
-/* ================= RESPONSIVE ================= */
-
-@media (max-width: 1024px) {
-  .hospital-list {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.hospital-card-banner {
+  height: 120px;
+  background: linear-gradient(135deg, var(--primary-light), var(--secondary-light));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
+.hospital-banner-icon {
+  width: 3rem;
+  height: 3rem;
+  color: var(--primary);
+  opacity: 0.85;
+}
+
+.rating-badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #f59e0b;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+[data-theme='dark'] .rating-badge {
+  background-color: var(--bg-card);
+}
+
+.hospital-card-body {
+  padding: 1.25rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.hospital-card-body h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.area-info {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.hospital-card-footer {
+  padding: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.btn-full-width {
+  width: 100%;
+}
+
+/* Empty State */
+.empty-state {
+  grid-column: 1 / -1;
+  padding: 4rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.empty-icon {
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+.empty-state h3 {
+  font-size: 1.25rem;
+  color: var(--text-main);
+}
+
+.empty-state p {
+  color: var(--text-muted);
+  max-width: 320px;
+  margin-bottom: 0.5rem;
+}
+
+/* Skeleton Loading Specifics */
+.skeleton-loading {
+  padding: 1rem;
+  gap: 0.75rem;
+}
+
+.skeleton-img {
+  height: 120px;
+  border-radius: var(--radius-md);
+}
+
+.skeleton-title {
+  width: 60%;
+  height: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.skeleton-subtitle {
+  width: 40%;
+  height: 1rem;
+}
+
+/* Responsiveness */
 @media (max-width: 768px) {
-  .nav-inner,
-  .search-inner,
-  .content {
-    width: calc(100% - 32px);
+  .hero-banner {
+    padding: 2.5rem 1.5rem;
   }
 
-  .hospital-list {
+  .hero-text-content h1 {
+    font-size: 1.85rem;
+  }
+
+  .hero-text-content p {
+    font-size: 0.95rem;
+  }
+
+  .hero-bg-shapes {
+    display: none;
+  }
+
+  .hospital-grid, .loading-grid {
     grid-template-columns: 1fr;
   }
-
-  .hospital-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .content h2 {
-    font-size: 1.3rem;
-  }
-
-  .search-box {
-    padding: 14px 16px;
-    border-radius: 22px;
-  }
-
-  .nav-inner {
-    border-radius: 22px;
-  }
 }
-

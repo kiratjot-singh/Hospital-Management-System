@@ -1,130 +1,119 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-}
-
-.profile-page {
+.profile-layout {
   min-height: 100vh;
-  background-color: #E8F7F9;
+  background-color: var(--bg-app);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 32px 1rem;
 }
 
-.profile-back-btn {
-  align-self: flex-start;
-  background: none;
-  border: none;
-  color: #58A7CA;
-  font-size: 1rem;
-  cursor: pointer;
-  margin-bottom: 1.5rem;
-  font-weight: 500;
-}
-
-.profile-back-btn:hover {
-  color: #4A94B5;
-  text-decoration: underline;
-}
-
-.profile-card {
-  background: #ffffff;
-  border-radius: 26px;
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
-  padding: 2rem;
+.profile-container {
+  max-width: 1280px;
   width: 100%;
-  max-width: 420px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-.profile-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.12);
-}
-
-.profile-avatar-section {
+.profile-info-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 3rem 2rem;
+  box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 1.5rem;
+  gap: 1.5rem;
+  max-width: 500px;
+  margin: 0 auto;
+  width: 100%;
+  text-align: center;
+  transition: background-color var(--transition-normal);
 }
 
-.profile-avatar {
-  width: 88px;
-  height: 88px;
-  border-radius: 18px;
-  background: #58A7CA;
+.profile-card-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avatar-initials-badge {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
   color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
   font-size: 2rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 0.75rem;
+  font-weight: 800;
+  box-shadow: var(--shadow-glow);
 }
 
-.profile-name {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #124F68;
-  margin: 0;
+.profile-card-header h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-main);
 }
 
-.profile-divider {
-  border: none;
-  border-top: 1px solid #E8F7F9;
-  margin: 0 0 1.5rem 0;
-}
-
-.profile-info-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.profile-info-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.profile-info-label {
+.patient-portal-tag {
   font-size: 0.75rem;
-  color: #6A7A86;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  color: var(--secondary);
+  background-color: var(--secondary-light);
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
 }
 
-.profile-info-value {
-  font-size: 1rem;
-  color: #35566B;
-  font-weight: 500;
+.profile-card-divider {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid var(--border);
 }
 
-.profile-state {
-  min-height: 100vh;
+.profile-fields-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.profile-field-row {
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: #6A7A86;
-  font-size: 1rem;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background-color: var(--bg-app);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  text-align: left;
 }
 
-@media (max-width: 768px) {
-  .profile-page {
-    padding: 16px 1rem;
-  }
+.field-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
 
-  .profile-card {
-    padding: 1.5rem;
-  }
+.field-meta svg {
+  color: var(--primary);
+}
 
-  .profile-avatar {
-    width: 72px;
-    height: 72px;
-    font-size: 1.5rem;
+.field-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+@media (max-width: 480px) {
+  .profile-info-card {
+    padding: 2rem 1.25rem;
   }
 }

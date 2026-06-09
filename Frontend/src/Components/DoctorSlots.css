@@ -1,100 +1,177 @@
-/* ================= SLOTS SECTION ================= */
-
-.slots-section {
-  margin-top: 48px;
+.slots-layout {
+  min-height: 100vh;
+  background-color: var(--bg-app);
+  display: flex;
+  flex-direction: column;
 }
 
-.slots-section h2 {
-  font-size: 1.7rem;
-  color: #0f4c5c;
-  margin-bottom: 22px;
+.slots-container {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-/* ================= GRID ================= */
-
-.slots-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 22px;
+.slots-selector-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  transition: background-color var(--transition-normal);
 }
 
-/* ================= SLOT CARD ================= */
+.slots-card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
 
-.slot-card {
-  background: #ffffff;
-  border-radius: 22px;
-  padding: 26px 20px;
+.slots-header-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--primary);
+  background-color: var(--primary-light);
+  padding: 0.5rem;
+  border-radius: var(--radius-md);
+}
 
+.slots-card-header h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 0.25rem;
+}
+
+.slots-card-header p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.date-picker-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 320px;
+}
+
+.date-picker-input {
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background-color: var(--bg-input);
+  color: var(--text-main);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.date-picker-input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.15);
+}
+
+.slots-divider {
+  border: 0;
+  border-top: 1px solid var(--border);
+}
+
+.slots-display-area {
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+.loading-inline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  padding: 3rem;
+}
+
+.prompt-select-date {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
-
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
-  cursor: pointer;
-  user-select: none;
-
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease,
-    background 0.25s ease;
+  justify-content: center;
+  gap: 1rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 4rem 2rem;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
 }
 
-.slot-card:hover {
-  transform: translateY(-6px);
-  background: #f1fbff;
-  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.14);
+.prompt-select-date svg {
+  opacity: 0.5;
 }
 
-/* ================= SLOT TIME ================= */
+.prompt-select-date.empty-slots {
+  background-color: var(--warning-bg);
+  border-color: rgba(245, 158, 11, 0.2);
+  color: var(--warning);
+}
 
-.slot-time {
+.slots-time-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.time-slot-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  transition: all var(--transition-normal);
+}
+
+.time-slot-card:hover {
+  border-color: var(--primary);
+  background-color: var(--bg-card-hover);
+  box-shadow: var(--shadow-sm);
+}
+
+.slot-clock-icon {
+  color: var(--secondary);
+  flex-shrink: 0;
+}
+
+.slot-time-text {
   font-size: 1rem;
-  font-weight: 600;
-  color: #0f4c5c;
-  letter-spacing: 0.3px;
+  font-weight: 700;
+  color: var(--text-main);
+  flex: 1;
 }
 
-/* ================= BOOK BUTTON ================= */
-
-.slot-book-btn {
-  margin-top: 6px;
-  padding: 8px 18px;
-  border-radius: 999px;
-  border: none;
-
-  background-color: #58a7ca;
-  color: #ffffff;
-
+.slot-action-btn {
+  padding: 0.5rem 1rem;
   font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-
-  transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
-.slot-book-btn:hover {
-  background-color: #4a94b5;
-  box-shadow: 0 6px 14px rgba(88, 167, 202, 0.45);
-}
-
-/* ================= RESPONSIVE ================= */
-
-@media (max-width: 1024px) {
-  .slots-grid {
-    grid-template-columns: repeat(3, 1fr);
+@media (max-width: 600px) {
+  .slots-selector-card {
+    padding: 1.5rem;
   }
-}
 
-@media (max-width: 768px) {
-  .slots-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .slots-card-header h2 {
+    font-size: 1.25rem;
   }
-}
 
-@media (max-width: 480px) {
-  .slots-grid {
+  .slots-time-grid {
     grid-template-columns: 1fr;
   }
 }
-

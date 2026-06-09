@@ -1,39 +1,143 @@
-.container {
-  width: 80%;
-  margin: 40px auto;
-  font-family: Arial, sans-serif;
+.appointments-layout {
+  min-height: 100vh;
+  background-color: var(--bg-app);
+  display: flex;
+  flex-direction: column;
 }
 
-h1 {
+.appointments-container {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.appointments-header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 1rem;
 }
 
-.card {
-  background: white;
-  padding: 20px;
-  margin-bottom: 15px;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+.appointments-header h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 0.25rem;
 }
 
-.status {
-  font-weight: bold;
+.appointments-header p {
+  font-size: 0.95rem;
+  color: var(--text-muted);
 }
 
-.status.pending {
-  color: orange;
+.appointments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
 }
 
-.status.confirmed {
-  color: green;
+.appointment-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all var(--transition-normal);
 }
 
-.status.cancelled {
-  color: red;
+.appointment-card:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-md);
 }
 
-.loading {
-  text-align: center;
-  margin-top: 50px;
+.card-top-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+}
+
+.doc-avatar-small {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-sm);
+  background-color: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.doc-title-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.doc-title-block h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.spec-text {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.status-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.status-tag.status-pending {
+  color: var(--warning);
+  background-color: var(--warning-bg);
+  border: 1px solid rgba(245, 158, 11, 0.15);
+}
+
+.status-tag.status-approved,
+.status-tag.status-accepted,
+.status-tag.status-confirmed {
+  color: var(--success);
+  background-color: var(--success-bg);
+  border: 1px solid rgba(16, 185, 129, 0.15);
+}
+
+.status-tag.status-rejected,
+.status-tag.status-cancelled {
+  color: var(--error);
+  background-color: var(--error-bg);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+.card-divider {
+  border: 0;
+  border-top: 1px solid var(--border);
+}
+
+.card-info-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.info-field-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-medium);
+}
+
+.info-field-item svg {
+  color: var(--text-muted);
 }

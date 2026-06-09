@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
-import "./ReceptionistLogin.css";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Phone, Lock, Heart, ArrowRight, RefreshCw, AlertCircle, ShieldAlert, Mail, User } from "lucide-react";
+import "./ReceptionistLogin.css";
 
 const ReceptionistLogin = () => {
   const [phone, setPhone] = useState("");
@@ -9,15 +11,13 @@ const ReceptionistLogin = () => {
   const [step, setStep] = useState("phone");
   const [mode, setMode] = useState("otp");
   const [showSignup, setShowSignup] = useState(false);
-
+  const [mesg, setMesg] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [hospitals, setHospitals] = useState([]);
 
   const isPhoneValid = phone.trim().length === 10;
   const navigate = useNavigate();
 
-  // ==========================================================
-  // Fetch hospitals ONLY when signup page opens
-  // ==========================================================
   const fetchHospitals = async () => {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/hospital/getHospitals`);
@@ -32,86 +32,118 @@ const ReceptionistLogin = () => {
     if (showSignup) fetchHospitals();
   }, [showSignup]);
 
-  // ==========================================================
-  // SEND OTP
-  // ==========================================================
   const handleSendOtp = async (e) => {
     e.preventDefault();
+    setMesg("");
+    setIsLoading(true);
 
-    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/receptionist/send-email-otp`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone }),
-    });
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/receptionist/send-email-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone }),
+      });
 
-    const data = await res.json();
-    if (data.success) setStep("otp");
-    else alert(data.message);
+      const data = await res.json();
+      if (data.success) {
+        setStep("otp");
+      } else {
+        setMesg(data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      setMesg("Error sending OTP");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // ==========================================================
-  // VERIFY OTP
-  // ==========================================================
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
+    setMesg("");
+    setIsLoading(true);
 
-    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/receptionist/verify-email-otp`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone, otp }),
-    });
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/receptionist/verify-email-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, otp }),
+      });
 
-    const data = await res.json();
-
-    if (data.success) navigate(`/home/${phone}`);
-    else alert(data.message);
+      const data = await res.json();
+      if (data.success) {
+        navigate(`/home/${phone}`);
+      } else {
+        setMesg(data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      setMesg("Error verifying OTP");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // ==========================================================
-  // PASSWORD LOGIN
-  // ==========================================================
   const handlePasswordLogin = async (e) => {
     e.preventDefault();
+    setMesg("");
+    setIsLoading(true);
 
-    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/receptionist/login-password`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone, password }),
-    });
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/receptionist/login-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, password }),
+      });
 
-    const data = await res.json();
-
-    if (data.success) navigate(`/home/receptionist/${phone}`);
-    else alert(data.message);
+      const data = await res.json();
+      if (data.success) {
+        navigate(`/home/receptionist/${phone}`);
+      } else {
+        setMesg(data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      setMesg("Error connecting to backend");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // ==========================================================
-  // SIGNUP
-  // ==========================================================
   const handleSignup = async (e) => {
     e.preventDefault();
+    setMesg("");
+    setIsLoading(true);
 
     const form = new FormData(e.target);
     const payload = {
       name: form.get("name"),
       email: form.get("email"),
       phone: form.get("phone"),
-      hospitalId: form.get("hospital"), // IMPORTANT: backend expects hospitalId
+      hospitalId: form.get("hospital"),
       password: form.get("password"),
     };
 
-    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/receptionist/signup`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/receptionist/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    const data = await res.json();
-
-    if (data.success) {
-      alert("Signup successful!");
-      setShowSignup(false);
-    } else alert(data.message);
+      const data = await res.json();
+      if (data.success) {
+        alert("Signup successful!");
+        setShowSignup(false);
+      } else {
+        setMesg(data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      setMesg("Error signing up receptionist");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const switchToOtp = () => {
@@ -119,6 +151,7 @@ const ReceptionistLogin = () => {
     setStep("phone");
     setOtp("");
     setPassword("");
+    setMesg("");
   };
 
   const switchToPassword = () => {
@@ -126,166 +159,229 @@ const ReceptionistLogin = () => {
     setStep("phone");
     setOtp("");
     setPassword("");
+    setMesg("");
   };
 
   return (
     <div className="login-page">
-      <div className="login-card">
-
-        {/* LEFT SIDE */}
-        <div className="login-left">
-          <h1 className="app-title">CareFlow</h1>
-          <p className="app-subtitle">Receptionist portal – booking & updates.</p>
+      <motion.div 
+        className="login-card glass-panel"
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        {/* LEFT SIDE: Brand */}
+        <div className="login-left receptionist-theme-bg">
+          <div className="brand-header">
+            <Heart className="brand-logoanimate animate-pulse" />
+            <span className="brand-name">CareFlow Support</span>
+          </div>
+          <h1 className="left-title">Front Desk Operations</h1>
+          <p className="left-subtitle">
+            Manage registrations, doctor availabilities, verify patient queues, and orchestrate physical visit schedules.
+          </p>
+          <div className="features-bullets">
+            <div className="bullet-item">
+              <span className="bullet-dot">✓</span>
+              <span>Patient Admission Control</span>
+            </div>
+            <div className="bullet-item">
+              <span className="bullet-dot">✓</span>
+              <span>Doctor Shifts Coordinator</span>
+            </div>
+          </div>
         </div>
 
         {/* RIGHT SIDE */}
         <div className="login-right">
+          {mesg && (
+            <motion.div 
+              className="error-box"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              <AlertCircle size={16} />
+              <span>{mesg}</span>
+            </motion.div>
+          )}
 
-          {/* ================= Login Section ================= */}
-          {!showSignup && (
+          {!showSignup ? (
             <>
               <h2 className="login-title">Receptionist Login</h2>
+              <p className="login-caption">Access front desk schedules and dashboards.</p>
 
-              {/* MODE SWITCH */}
               <div className="toggle-container">
                 <button
+                  type="button"
                   className={`toggle-btn ${mode === "otp" ? "active" : ""}`}
                   onClick={switchToOtp}
                 >
-                  Login with OTP
+                  Secure OTP
                 </button>
-
                 <button
+                  type="button"
                   className={`toggle-btn ${mode === "password" ? "active" : ""}`}
                   onClick={switchToPassword}
                 >
-                  Login with Password
+                  Password
                 </button>
               </div>
 
-              {/* ----------------- OTP LOGIN ------------------ */}
               {mode === "otp" && step === "phone" && (
                 <form className="login-form" onSubmit={handleSendOtp}>
-                  <label className="input-label">Mobile Number</label>
-                  <div className="input-group">
-                    <span className="country-code">+91</span>
-                    <input
-                      type="tel"
-                      maxLength={10}
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-                      placeholder="10-digit number"
-                      required
-                    />
+                  <div className="form-group">
+                    <label className="input-label">Mobile Number</label>
+                    <div className="input-group">
+                      <span className="country-code">+91</span>
+                      <input
+                        type="tel"
+                        maxLength={10}
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+                        placeholder="10-digit number"
+                        required
+                      />
+                      <Phone size={18} className="input-icon" />
+                    </div>
                   </div>
-                  <button className="primary-btn" disabled={!isPhoneValid}>
-                    Send OTP
+                  <button className="primary-btn" disabled={!isPhoneValid || isLoading}>
+                    {isLoading ? <RefreshCw className="animate-spin" size={18} /> : "Send OTP"}
                   </button>
                 </form>
               )}
 
-              {/* ----------------- OTP VERIFY ------------------ */}
               {mode === "otp" && step === "otp" && (
                 <form className="login-form" onSubmit={handleVerifyOtp}>
-                  <label className="input-label">Enter OTP</label>
-                  <input
-                    type="text"
-                    maxLength={6}
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-                    placeholder="6-digit OTP"
-                    required
-                  />
-                  <button className="primary-btn">Verify & Login</button>
-                </form>
-              )}
-
-              {/* ---------------- PASSWORD LOGIN ---------------- */}
-              {mode === "password" && (
-                <form className="login-form" onSubmit={handlePasswordLogin}>
-                  <label className="input-label">Mobile Number</label>
-                  <div className="input-group">
-                    <span className="country-code">+91</span>
+                  <div className="info-badge">
+                    OTP sent to <strong>+91-{phone}</strong>
+                  </div>
+                  <div className="form-group">
+                    <label className="input-label">Enter OTP</label>
                     <input
-                      type="tel"
-                      maxLength={10}
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-                      placeholder="10-digit number"
+                      type="text"
+                      maxLength={6}
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                      placeholder="6-digit OTP"
                       required
                     />
                   </div>
-
-                  <label className="input-label">Password</label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter password"
-                    required
-                  />
-
-                  <button className="primary-btn" disabled={!isPhoneValid || !password}>
-                    Login
+                  <button className="primary-btn" disabled={isLoading}>
+                    {isLoading ? <RefreshCw className="animate-spin" size={18} /> : "Verify & Login"}
                   </button>
                 </form>
               )}
 
-              {/* ---------------- SIGNUP LINK ---------------- */}
-              <p className="signup-link">
-                Don't have an account?
-                <button className="link-btn" onClick={() => setShowSignup(true)}>
+              {mode === "password" && (
+                <form className="login-form" onSubmit={handlePasswordLogin}>
+                  <div className="form-group">
+                    <label className="input-label">Mobile Number</label>
+                    <div className="input-group">
+                      <span className="country-code">+91</span>
+                      <input
+                        type="tel"
+                        maxLength={10}
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+                        placeholder="10-digit number"
+                        required
+                      />
+                      <Phone size={18} className="input-icon" />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="input-label">Password</label>
+                    <div className="input-group no-prefix">
+                      <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Enter password"
+                        required
+                      />
+                      <Lock size={18} className="input-icon" />
+                    </div>
+                  </div>
+
+                  <button className="primary-btn" disabled={!isPhoneValid || !password || isLoading}>
+                    {isLoading ? <RefreshCw className="animate-spin" size={18} /> : "Login"}
+                  </button>
+                </form>
+              )}
+
+              <p className="helper-text">
+                Don't have an account?{" "}
+                <span className="helper-link" onClick={() => { setShowSignup(true); setMesg(""); }} style={{ cursor: "pointer" }}>
                   Sign Up
-                </button>
+                </span>
               </p>
             </>
-          )}
-
-          {/* ================= Signup Section ================= */}
-          {showSignup && (
+          ) : (
             <form className="login-form" onSubmit={handleSignup}>
-              <h2>Create Receptionist Account</h2>
+              <h2 className="login-title">Create Front Desk Account</h2>
+              <p className="login-caption">Register a receptionist credentials.</p>
 
-              <label className="input-label">Full Name</label>
-              <input name="name" type="text" placeholder="Enter full name" required />
-
-              <label className="input-label">Email</label>
-              <input name="email" type="email" placeholder="Enter email" required />
-
-              <label className="input-label">Mobile Number</label>
-              <div className="input-group">
-                <span className="country-code">+91</span>
-                <input name="phone" type="tel" maxLength={10} placeholder="10-digit number" required />
+              <div className="form-group">
+                <label className="input-label">Full Name</label>
+                <div className="input-group no-prefix">
+                  <input name="name" type="text" placeholder="Enter full name" required />
+                  <User size={18} className="input-icon" />
+                </div>
               </div>
 
-              {/* HOSPITAL DROPDOWN */}
-              <label className="input-label">Select Hospital</label>
-              <select name="hospital" required>
-                <option value="">Select Hospital</option>
-                {hospitals.map((h) => (
-                  <option key={h._id} value={h._id}>
-                    {h.name}
-                  </option>
-                ))}
-              </select>
+              <div className="form-group">
+                <label className="input-label">Email</label>
+                <div className="input-group no-prefix">
+                  <input name="email" type="email" placeholder="Enter email" required />
+                  <Mail size={18} className="input-icon" />
+                </div>
+              </div>
 
-              <label className="input-label">Create Password</label>
-              <input name="password" type="password" placeholder="Enter password" required />
+              <div className="form-group">
+                <label className="input-label">Mobile Number</label>
+                <div className="input-group">
+                  <span className="country-code">+91</span>
+                  <input name="phone" type="tel" maxLength={10} placeholder="10-digit number" required />
+                  <Phone size={18} className="input-icon" />
+                </div>
+              </div>
 
-              <button className="primary-btn">Sign Up</button>
+              <div className="form-group">
+                <label className="input-label">Select Hospital</label>
+                <select name="hospital" required>
+                  <option value="">Choose Hospital</option>
+                  {hospitals.map((h) => (
+                    <option key={h._id} value={h._id}>
+                      {h.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label className="input-label">Create Password</label>
+                <div className="input-group no-prefix">
+                  <input name="password" type="password" placeholder="Enter secure password" required />
+                  <Lock size={18} className="input-icon" />
+                </div>
+              </div>
+
+              <button className="primary-btn" disabled={isLoading}>
+                {isLoading ? <RefreshCw className="animate-spin" size={18} /> : "Sign Up"}
+              </button>
 
               <button
                 className="link-btn"
                 type="button"
-                onClick={() => setShowSignup(false)}
+                onClick={() => { setShowSignup(false); setMesg(""); }}
               >
                 Back to Login
               </button>
             </form>
           )}
-
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
