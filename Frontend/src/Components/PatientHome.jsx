@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./PatientHome.css";
 import { useNavigate, useParams } from "react-router";
 import axios from "axios";
+import ChatAgent from "./ChatAgent";
 
 const PatientHome = () => {
   const [search, setSearch] = useState("");
@@ -104,6 +105,7 @@ const [patientId, setPatientId] = useState(null);
           ))}
         </div>
       </main>
+      <ChatAgent />
     </div>
   );
 };

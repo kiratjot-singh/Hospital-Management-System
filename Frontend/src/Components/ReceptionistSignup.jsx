@@ -54,7 +54,7 @@ useEffect(() => {
       <div className="login-card">
         {/* LEFT SIDE */}
         <div className="login-left">
-          <h1 className="app-title">Hospital Management System</h1>
+          <h1 className="app-title">CareFlow</h1>
           <p className="app-subtitle">
             Create your patient account to book appointments and manage your
             visits easily.

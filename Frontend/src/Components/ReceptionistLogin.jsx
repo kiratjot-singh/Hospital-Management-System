@@ -134,7 +134,7 @@ const ReceptionistLogin = () => {
 
         {/* LEFT SIDE */}
         <div className="login-left">
-          <h1 className="app-title">Hospital Management System</h1>
+          <h1 className="app-title">CareFlow</h1>
           <p className="app-subtitle">Receptionist portal – booking & updates.</p>
         </div>
 

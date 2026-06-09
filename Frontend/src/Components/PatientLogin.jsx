@@ -78,7 +78,7 @@ const PatientLogin = () => {
       <div className="login-card">
         {/* LEFT SIDE */}
         <div className="login-left">
-          <h1 className="app-title">Hospital Management System</h1>
+          <h1 className="app-title">CareFlow</h1>
           <p className="app-subtitle">
             Patient portal – book appointments, view reports and manage your
             visits easily.
