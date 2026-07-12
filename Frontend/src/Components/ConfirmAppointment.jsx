@@ -44,7 +44,8 @@ const ConfirmAppointment = () => {
           slot: decodedSlot,
           reason,
           patient: patientId,
-        }
+        },
+        { withCredentials: true }
       );
 
       if (res.data.success) {

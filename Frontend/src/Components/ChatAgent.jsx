@@ -43,11 +43,20 @@ const ChatAgent = ({ patientId }) => {
         content: msg.content,
       }));
 
-      const response = await axios.post("http://localhost:8000/api/chat", {
-        message: userMessage.content,
-        history: chatHistory,
-        patientId: patientId,
-      });
+      const agentBaseUrl = import.meta.env.VITE_AGENT_BASE_URL || "http://localhost:8000";
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `${agentBaseUrl}/api/chat`,
+        {
+          message: userMessage.content,
+          history: chatHistory,
+          patientId: patientId,
+          token: token,
+        },
+        {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }
+      );
 
       if (response.data && response.data.response) {
         setMessages((prev) => [

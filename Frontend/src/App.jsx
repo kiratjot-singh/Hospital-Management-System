@@ -14,6 +14,7 @@ import DepartmentDoctors from './Components/DepartmentDoctors'
 import DoctorLogin from "./Components/DoctorLogin";
 import DoctorSignup from "./Components/DoctorSignup";
 import DoctorSlots from "./Components/DoctorSlots";
+import ConfigureClinic from "./Components/ConfigureClinic";
 import ConfirmAppointment from "./Components/ConfirmAppointment";
 import Appointments from "./Components/Appoitments";
 import PatientProfile from './Components/PatientProfile';
@@ -34,6 +35,7 @@ function App() {
         {/* ---------------- Doctor Routes ---------------- */}
         <Route path="/login/doctor" element={<DoctorLogin />} />
         <Route path="/signup/doctor" element={<DoctorSignup />} />
+        <Route path="/doctor/configure-clinic/:hospitalId" element={<ConfigureClinic />} />
         <Route path="/doctor/:id" element={<DoctorPage />} />
 
              {/* ---------------- Patient Routes ---------------- */}

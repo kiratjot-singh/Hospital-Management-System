@@ -26,7 +26,13 @@ const DoctorAppointments = () => {
     try {
       setLoading(true);
       const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/appointments/slots?doctor=${id}&hospital=${hospitalId}&date=${date}`
+        `${import.meta.env.VITE_API_BASE_URL}/appointments/slots?doctor=${id}&hospital=${hospitalId}&date=${date}`,
+        {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          },
+          credentials: "include"
+        }
       );
       const data = await res.json();
       if (data.success) setSlots(data.slots);
@@ -43,7 +49,12 @@ const DoctorAppointments = () => {
   }, [id, date, hospitalId]);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_BASE_URL}/patient`)
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/patient`, {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
+      credentials: "include"
+    })
       .then((r) => r.json())
       .then((d) => setPatients(d.patients || []));
   }, []);
@@ -55,7 +66,10 @@ const DoctorAppointments = () => {
       setBooking(true);
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/appointments/book`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
         body: JSON.stringify({
           doctor: id,
           patient: selectedPatient,
@@ -63,6 +77,7 @@ const DoctorAppointments = () => {
           date,
           slot: selectedSlot,
         }),
+        credentials: "include",
       });
 
       const data = await res.json();

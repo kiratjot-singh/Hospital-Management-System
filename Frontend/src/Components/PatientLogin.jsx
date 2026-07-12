@@ -54,6 +54,8 @@ const PatientLogin = () => {
       if (res.data.success) {
         const patientId = res.data.patient.id;
         localStorage.setItem("patientId", patientId);
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("role", "patient");
         setMesg(res.data.message);
         navigate(`/home/patient/${phone}`);
       } else {

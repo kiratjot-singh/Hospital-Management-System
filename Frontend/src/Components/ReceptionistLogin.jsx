@@ -68,11 +68,12 @@ const ReceptionistLogin = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone, otp }),
+        credentials: "include"
       });
 
       const data = await res.json();
       if (data.success) {
-        navigate(`/home/${phone}`);
+        navigate(`/home/receptionist/${phone}`);
       } else {
         setMesg(data.message);
       }
@@ -94,6 +95,7 @@ const ReceptionistLogin = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone, password }),
+        credentials: "include"
       });
 
       const data = await res.json();

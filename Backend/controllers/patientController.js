@@ -65,18 +65,19 @@ export const login = async (req, res) => {
     }
 
     const key = process.env.JWT_SECRET || "secretkey";
-    const token = jwt.sign({ id: user._id }, key, { expiresIn: "7d" });
+    const token = jwt.sign({ id: user._id, role: "patient" }, key, { expiresIn: "7d" });
 
     res.cookie("token", token, {
       httpOnly: true,
       sameSite: "lax",
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
       path: "/",
     });
 
     return res.json({
       success: true,
       message: "Logged in successfully",
+      token,
       patient: {
         id: user._id,
         name: user.name,
@@ -89,23 +90,24 @@ export const login = async (req, res) => {
   }
 };
 
-
-/* -------------------- AUTH MIDDLEWARE -------------------- */
-export const protectPatient = (req, res, next) => {
-  const token = req.cookies.token;
-
-  if (!token) {
-    return res.status(401).json({ success: false, message: "Not logged in" });
-  }
-
+/* -------------------- LOGOUT -------------------- */
+export const logout = async (req, res) => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || "secretkey");
-    req.patientId = decoded.id; // Attach patient ID
-    next();
+    res.clearCookie("token", {
+      path: "/",
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production"
+    });
+    return res.json({ success: true, message: "Logged out successfully" });
   } catch (err) {
-    return res.status(401).json({ success: false, message: "Invalid token" });
+    return res.status(500).json({ success: false, message: err.message });
   }
 };
+
+/* -------------------- AUTH MIDDLEWARE -------------------- */
+import { protectPatient as protectPatientMiddleware } from "../middleware/authMiddleware.js";
+export const protectPatient = protectPatientMiddleware;
 
 /* -------------------- GET LOGGED-IN PATIENT -------------------- */
 export const getMyPatientProfile = async (req, res) => {

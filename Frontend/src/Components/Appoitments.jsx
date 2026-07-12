@@ -15,6 +15,9 @@ const Appointments = () => {
     const fetchAppointments = async () => {
       try {
         const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/appointments/patient/${patientId}`, {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          },
           credentials: "include",
         });
         const data = await res.json();

@@ -13,6 +13,9 @@ const DoctorSignup = () => {
 
   const [hospital, setHospital] = useState("");
   const [hospitals, setHospitals] = useState([]);
+  const [isNewClinic, setIsNewClinic] = useState(false);
+  const [newClinicName, setNewClinicName] = useState("");
+  const [newClinicArea, setNewClinicArea] = useState("");
 
   const [departments, setDepartments] = useState([]);
   const [selectedDepartments, setSelectedDepartments] = useState([]);
@@ -20,9 +23,6 @@ const DoctorSignup = () => {
 
   const [qualifications, setQualifications] = useState("MBBS");
   const [experience, setExperience] = useState("");
-  const [startTime, setStartTime] = useState("10:00");
-  const [endTime, setEndTime] = useState("17:00");
-  const [slotDuration, setSlotDuration] = useState(15);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMesg, setErrorMesg] = useState("");
 
@@ -40,7 +40,7 @@ const DoctorSignup = () => {
   }, []);
 
   useEffect(() => {
-    if (!hospital) return;
+    if (isNewClinic || !hospital) return;
     const fetchDepartments = async () => {
       try {
         const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctor/getDepartment`, {
@@ -56,7 +56,7 @@ const DoctorSignup = () => {
     };
     fetchDepartments();
     setSelectedDepartments([]);
-  }, [hospital]);
+  }, [hospital, isNewClinic]);
 
   const toggleDepartment = (id) => {
     setSelectedDepartments((prev) =>
@@ -72,10 +72,8 @@ const DoctorSignup = () => {
       !name ||
       !phone ||
       !password ||
-      !hospital ||
-      selectedDepartments.length === 0 ||
-      !startTime ||
-      !endTime
+      (!hospital && !newClinicName) ||
+      selectedDepartments.length === 0
     ) {
       setErrorMesg("Please fill all required fields");
       return;
@@ -86,15 +84,12 @@ const DoctorSignup = () => {
       name,
       phone,
       password,
-      hospitalId: hospital,
+      hospitalId: isNewClinic ? "" : hospital,
       departments: selectedDepartments,
       qualifications,
       experience: Number(experience),
-      workingHours: {
-        start: startTime,
-        end: endTime,
-      },
-      slotDuration: Number(slotDuration),
+      newHospitalName: isNewClinic ? newClinicName : "",
+      newHospitalArea: isNewClinic ? newClinicArea : "",
     };
 
     try {
@@ -106,7 +101,14 @@ const DoctorSignup = () => {
 
       const data = await res.json();
       if (data.success) {
-        navigate("/login/doctor");
+        if (isNewClinic) {
+          localStorage.setItem("role", "doctor");
+          localStorage.setItem("doctorId", data.doctor._id);
+          localStorage.setItem("token", data.token);
+          navigate(`/doctor/configure-clinic/${data.doctor.hospital}`);
+        } else {
+          navigate("/login/doctor");
+        }
       } else {
         setErrorMesg(data.message);
       }
@@ -178,8 +180,23 @@ const DoctorSignup = () => {
 
             <div className="form-group">
               <label className="input-label">Assign Hospital</label>
-              <select value={hospital} onChange={(e) => setHospital(e.target.value)} required>
+              <select 
+                value={isNewClinic ? "new" : hospital} 
+                onChange={(e) => {
+                  if (e.target.value === "new") {
+                    setIsNewClinic(true);
+                    setHospital("");
+                    setDepartments(["General Medicine", "Cardiology", "Dermatology", "Pediatrics", "Orthopedics", "Neurology", "Gynaecology"].map(name => ({ _id: name, name })));
+                    setSelectedDepartments([]);
+                  } else {
+                    setIsNewClinic(false);
+                    setHospital(e.target.value);
+                  }
+                }} 
+                required
+              >
                 <option value="">Choose Hospital</option>
+                <option value="new">+ Add Custom Clinic/Hospital...</option>
                 {hospitals.map((h) => (
                   <option key={h._id} value={h._id}>
                     {h.name}
@@ -187,6 +204,29 @@ const DoctorSignup = () => {
                 ))}
               </select>
             </div>
+
+            {isNewClinic && (
+              <>
+                <div className="form-group">
+                  <label className="input-label">Clinic / Hospital Name</label>
+                  <input 
+                    value={newClinicName} 
+                    onChange={(e) => setNewClinicName(e.target.value)} 
+                    placeholder="e.g. Grace Clinic" 
+                    required 
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="input-label">Clinic Area / City</label>
+                  <input 
+                    value={newClinicArea} 
+                    onChange={(e) => setNewClinicArea(e.target.value)} 
+                    placeholder="e.g. Connaught Place" 
+                    required 
+                  />
+                </div>
+              </>
+            )}
           </div>
 
           {/* Department Selection */}
@@ -219,26 +259,6 @@ const DoctorSignup = () => {
                 )}
               </div>
             )}
-          </div>
-
-          {/* Working Hours */}
-          <div className="form-section-title">Schedule Settings</div>
-
-          <div className="signup-fields-grid hours-grid">
-            <div className="form-group">
-              <label className="input-label">Shift Start Time</label>
-              <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} required />
-            </div>
-
-            <div className="form-group">
-              <label className="input-label">Shift End Time</label>
-              <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} required />
-            </div>
-
-            <div className="form-group">
-              <label className="input-label">Consultation Slot Duration (Mins)</label>
-              <input type="number" value={slotDuration} onChange={(e) => setSlotDuration(e.target.value)} required />
-            </div>
           </div>
 
           <button type="submit" className="primary-btn submit-signup" disabled={isLoading}>

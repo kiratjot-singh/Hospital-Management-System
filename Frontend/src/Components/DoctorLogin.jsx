@@ -37,7 +37,8 @@ const DoctorLogin = () => {
         const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctor/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phone, password })
+          body: JSON.stringify({ phone, password }),
+          credentials: "include"
         });
 
         const data = await response.json();
@@ -45,6 +46,7 @@ const DoctorLogin = () => {
         if (data.success) {
           localStorage.setItem("role", "doctor");
           localStorage.setItem("doctorId", data.doctor._id);
+          localStorage.setItem("token", data.token);
           navigate(`/doctor/${data.doctor._id}`);
         } else {
           setMesg(data.message || "Login failed");

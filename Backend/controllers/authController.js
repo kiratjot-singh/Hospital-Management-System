@@ -10,11 +10,11 @@ import Appointment from "../models/Appointment.js";
 // 
 // Looking to send emails in production? Check out our Email API/SMTP product!
 var transporter = nodemailer.createTransport({
-  host: "sandbox.smtp.mailtrap.io",
-  port: 2525,
+  host: process.env.MAILTRAP_HOST || "sandbox.smtp.mailtrap.io",
+  port: Number(process.env.MAILTRAP_PORT) || 2525,
   auth: {
-    user: "0471591f54d4e9",
-    pass: "c027d88cc0a538"
+    user: process.env.MAILTRAP_USER,
+    pass: process.env.MAILTRAP_PASS
   }
 });
 
@@ -212,7 +212,16 @@ export const verifyEmailOtp = async (req, res) => {
     user.otpExpires = null;
     await user.save();
 
-    res.json({ success: true, token: createToken(user._id) });
+    const token = createToken(user._id);
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+    });
+
+    res.json({ success: true, token });
   } catch (err) {
     res.json({ success: false, message: err.message });
   }
@@ -229,8 +238,32 @@ export const loginPassword = async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.json({ success: false, message: "Incorrect password" });
 
-    res.json({ success: true, token: createToken(user._id) });
+    const token = createToken(user._id);
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+    });
+
+    res.json({ success: true, token });
   } catch (err) {
     res.json({ success: false, message: err.message });
+  }
+};
+
+// ---------------- LOGOUT ----------------
+export const logout = async (req, res) => {
+  try {
+    res.clearCookie("token", {
+      path: "/",
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production"
+    });
+    return res.json({ success: true, message: "Logged out successfully" });
+  } catch (err) {
+    return res.json({ success: false, message: err.message });
   }
 };

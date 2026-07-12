@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Sun, Moon, LogOut, Calendar, User, HeartPulse, Menu, X } from "lucide-react";
+import axios from "axios";
 import "./Navbar.css";
 
 const Navbar = ({ userName, role, patientId, phone }) => {
@@ -18,10 +19,26 @@ const Navbar = ({ userName, role, patientId, phone }) => {
     setTheme(prev => (prev === "light" ? "dark" : "light"));
   };
 
-  const handleLogout = () => {
-    // Clear credentials/localstorage
-    localStorage.removeItem("patientId");
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+      if (role === "patient") {
+        await axios.post(`${backendUrl}/api/patient/logout`, {}, { withCredentials: true });
+      } else if (role === "doctor") {
+        await axios.post(`${backendUrl}/api/doctor/logout`, {}, { withCredentials: true });
+      } else if (role === "receptionist") {
+        await axios.post(`${backendUrl}/api/receptionist/logout`, {}, { withCredentials: true });
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      // Clear credentials/localstorage
+      localStorage.removeItem("patientId");
+      localStorage.removeItem("doctorId");
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      navigate("/");
+    }
   };
 
   const getHomePath = () => {

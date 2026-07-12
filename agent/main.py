@@ -1,6 +1,7 @@
 import os
 import datetime
-from fastapi import FastAPI, HTTPException
+import jwt
+from fastapi import FastAPI, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Optional
@@ -228,38 +229,94 @@ def get_available_slots(doctor_id: str, hospital_id: str, date_str: str) -> str:
         return "Error: Database not connected."
         
     try:
+        # Validate 2-month booking horizon (60 days)
+        dt = datetime.datetime.strptime(date_str, "%Y-%m-%d")
+        today = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
+        horizon = today + datetime.timedelta(days=60)
+        
+        if dt < today or dt > horizon:
+            return "Error: Appointments can only be scheduled within the 2-month booking horizon (next 60 days)."
+
         doctor = db["doctors"].find_one({"_id": ObjectId(doctor_id)})
         if not doctor:
             return "Doctor not found."
             
-        working_hours = doctor.get("workingHours", {})
-        start_time = working_hours.get("start", "10:00")
-        end_time = working_hours.get("end", "17:00")
-        duration = doctor.get("slotDuration", 15)
-        
-        all_slots = generate_slots(start_time, end_time, duration)
-        
-        # Format the start and end range for that date
-        dt = datetime.datetime.strptime(date_str, "%Y-%m-%d")
-        day_start = datetime.datetime.combine(dt.date(), datetime.time.min)
-        day_end = datetime.datetime.combine(dt.date(), datetime.time.max)
-        
-        # Fetch booked appointments
-        booked_cursor = db["appointments"].find({
+        # Clean past empty slots first
+        try:
+            db["slots"].delete_many({
+                "doctor": ObjectId(doctor_id),
+                "date": {"$lt": today},
+                "status": {"$ne": "booked"}
+            })
+            
+            today_slots_cursor = db["slots"].find({
+                "doctor": ObjectId(doctor_id),
+                "date": today,
+                "status": {"$ne": "booked"}
+            })
+            now_time = datetime.datetime.now()
+            slots_to_delete = []
+            for s in today_slots_cursor:
+                try:
+                    slot_start = s["slot"].split("-")[0]
+                    h, m = map(int, slot_start.split(":"))
+                    slot_dt = today.replace(hour=h, minute=m, second=0, microsecond=0)
+                    if slot_dt < now_time:
+                        slots_to_delete.append(s["_id"])
+                except Exception:
+                    pass
+            if slots_to_delete:
+                db["slots"].delete_many({"_id": {"$in": slots_to_delete}})
+        except Exception as e:
+            print(f"Error cleaning past empty slots in Python agent: {e}")
+            
+        slots_cursor = db["slots"].find({
             "doctor": ObjectId(doctor_id),
             "hospital": ObjectId(hospital_id),
-            "date": {"$gte": day_start, "$lte": day_end},
-            "status": "booked"
+            "date": dt
         })
+        slots = list(slots_cursor)
         
-        booked_slots = [b.get("slot") for b in booked_cursor]
-        free_slots = [s for s in all_slots if s not in booked_slots]
+        # Lazy generation
+        if not slots:
+            working_hours = doctor.get("workingHours", {})
+            start_time = working_hours.get("start", "10:00")
+            end_time = working_hours.get("end", "17:00")
+            duration = doctor.get("slotDuration", 15)
+            
+            valid_slots = generate_slots(start_time, end_time, duration)
+            slots_to_create = [{
+                "doctor": ObjectId(doctor_id),
+                "hospital": ObjectId(hospital_id),
+                "date": dt,
+                "slot": s,
+                "status": "free",
+                "patient": None,
+                "appointment": None,
+                "createdAt": datetime.datetime.utcnow(),
+                "updatedAt": datetime.datetime.utcnow(),
+                "__v": 0
+            } for s in valid_slots]
+
+            if slots_to_create:
+                try:
+                    db["slots"].insert_many(slots_to_create, ordered=False)
+                except Exception:
+                    pass
+            
+            slots_cursor = db["slots"].find({
+                "doctor": ObjectId(doctor_id),
+                "hospital": ObjectId(hospital_id),
+                "date": dt
+            })
+            slots = list(slots_cursor)
+
+        free_slots = [s.get("slot") for s in slots if s.get("status") == "free"]
         
         result = {
             "doctorName": doctor.get("name"),
             "date": date_str,
-            "totalSlots": len(all_slots),
-            "bookedSlots": booked_slots,
+            "totalSlots": len(slots),
             "availableSlots": free_slots
         }
         
@@ -326,6 +383,54 @@ def book_appointment(patient_id: str, doctor_id: str, hospital_id: str, date_str
         return "Error: Database not connected."
         
     try:
+        dt = datetime.datetime.strptime(date_str, "%Y-%m-%d")
+        
+        # 1. Validate Booking Horizon (60 days)
+        today = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
+        horizon = today + datetime.timedelta(days=60)
+        
+        if dt < today or dt > horizon:
+            return "Error: Appointments can only be scheduled within the 2-month booking horizon (next 60 days)."
+            
+        # Clean past empty slots first
+        try:
+            db["slots"].delete_many({
+                "doctor": ObjectId(doctor_id),
+                "date": {"$lt": today},
+                "status": {"$ne": "booked"}
+            })
+            
+            today_slots_cursor = db["slots"].find({
+                "doctor": ObjectId(doctor_id),
+                "date": today,
+                "status": {"$ne": "booked"}
+            })
+            now_time = datetime.datetime.now()
+            slots_to_delete = []
+            for s in today_slots_cursor:
+                try:
+                    slot_start = s["slot"].split("-")[0]
+                    h, m = map(int, slot_start.split(":"))
+                    slot_dt = today.replace(hour=h, minute=m, second=0, microsecond=0)
+                    if slot_dt < now_time:
+                        slots_to_delete.append(s["_id"])
+                except Exception:
+                    pass
+            if slots_to_delete:
+                db["slots"].delete_many({"_id": {"$in": slots_to_delete}})
+        except Exception as e:
+            print(f"Error cleaning past empty slots in Python agent: {e}")
+
+        # Ensure slot is not in the past
+        try:
+            slot_start_str = slot.split("-")[0]
+            sh, sm = map(int, slot_start_str.split(":"))
+            slot_dt = dt.replace(hour=sh, minute=sm, second=0, microsecond=0)
+            if slot_dt < datetime.datetime.now():
+                return "Error: Cannot book appointments in the past."
+        except Exception as e:
+            return f"Error: Invalid slot format. {str(e)}"
+            
         doctor = db["doctors"].find_one({"_id": ObjectId(doctor_id)})
         if not doctor:
             return "Error: Doctor not found."
@@ -338,37 +443,74 @@ def book_appointment(patient_id: str, doctor_id: str, hospital_id: str, date_str
         if not hospital:
             return "Error: Hospital not found."
             
-        dt = datetime.datetime.strptime(date_str, "%Y-%m-%d")
-        # Ensure date is not in the past
-        today = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
-        if dt < today:
-            return "Error: Cannot book an appointment in the past."
-            
-        # Verify slot is valid
-        working_hours = doctor.get("workingHours", {})
-        start_time = working_hours.get("start", "10:00")
-        end_time = working_hours.get("end", "17:00")
-        duration = doctor.get("slotDuration", 15)
-        
-        valid_slots = generate_slots(start_time, end_time, duration)
-        if slot not in valid_slots:
-            return f"Error: Invalid slot. Available slots are: {', '.join(valid_slots)}"
-            
-        # Check if slot is already booked
-        day_start = datetime.datetime.combine(dt.date(), datetime.time.min)
-        day_end = datetime.datetime.combine(dt.date(), datetime.time.max)
-        
-        exists = db["appointments"].find_one({
+        # 2. Check if slot document exists (lazy generate if needed)
+        slot_doc = db["slots"].find_one({
             "doctor": ObjectId(doctor_id),
             "hospital": ObjectId(hospital_id),
-            "slot": slot,
-            "date": {"$gte": day_start, "$lte": day_end},
-            "status": "booked"
+            "date": dt,
+            "slot": slot
         })
-        
-        if exists:
-            return "Error: This slot is already booked."
+
+        if not slot_doc:
+            working_hours = doctor.get("workingHours", {})
+            start_time = working_hours.get("start", "10:00")
+            end_time = working_hours.get("end", "17:00")
+            duration = doctor.get("slotDuration", 15)
             
+            valid_slots = generate_slots(start_time, end_time, duration)
+            if slot not in valid_slots:
+                return f"Error: Invalid slot. Available slots are: {', '.join(valid_slots)}"
+
+            slots_to_create = [{
+                "doctor": ObjectId(doctor_id),
+                "hospital": ObjectId(hospital_id),
+                "date": dt,
+                "slot": s,
+                "status": "free",
+                "patient": None,
+                "appointment": None,
+                "createdAt": datetime.datetime.utcnow(),
+                "updatedAt": datetime.datetime.utcnow(),
+                "__v": 0
+            } for s in valid_slots]
+
+            if slots_to_create:
+                try:
+                    db["slots"].insert_many(slots_to_create, ordered=False)
+                except Exception:
+                    pass
+            
+            slot_doc = db["slots"].find_one({
+                "doctor": ObjectId(doctor_id),
+                "hospital": ObjectId(hospital_id),
+                "date": dt,
+                "slot": slot
+            })
+
+        # 3. Atomically Reserve the Slot
+        if not slot_doc or slot_doc.get("status") != "free":
+            return "Error: This slot is already booked."
+
+        res = db["slots"].find_one_and_update(
+            {
+                "doctor": ObjectId(doctor_id),
+                "hospital": ObjectId(hospital_id),
+                "date": dt,
+                "slot": slot,
+                "status": "free"
+            },
+            {
+                "$set": {
+                    "status": "booked",
+                    "patient": ObjectId(patient_id),
+                    "updatedAt": datetime.datetime.utcnow()
+                }
+            }
+        )
+
+        if not res:
+            return "Error: This slot is already booked."
+
         # Create appointment doc
         app_doc = {
             "doctor": ObjectId(doctor_id),
@@ -383,8 +525,14 @@ def book_appointment(patient_id: str, doctor_id: str, hospital_id: str, date_str
             "__v": 0
         }
         
-        res = db["appointments"].insert_one(app_doc)
-        created_id = str(res.inserted_id)
+        insert_res = db["appointments"].insert_one(app_doc)
+        created_id = insert_res.inserted_id
+        
+        # Link slot to appointment
+        db["slots"].update_one(
+            {"_id": res["_id"]},
+            {"$set": {"appointment": created_id}}
+        )
         
         # Link appointment to patient
         db["patients"].update_one(
@@ -417,6 +565,19 @@ def cancel_appointment(appointment_id: str) -> str:
         db["appointments"].update_one(
             {"_id": ObjectId(appointment_id)},
             {"$set": {"status": "cancelled", "updatedAt": datetime.datetime.utcnow()}}
+        )
+
+        # Free up the slot document
+        db["slots"].update_one(
+            {"appointment": ObjectId(appointment_id)},
+            {
+                "$set": {
+                    "status": "free",
+                    "patient": None,
+                    "appointment": None,
+                    "updatedAt": datetime.datetime.utcnow()
+                }
+            }
         )
         
         # Update references in patient's bookedAppointments and previousAppointments
@@ -451,12 +612,13 @@ class ChatRequest(BaseModel):
     message: str
     history: List[Dict[str, str]] = []
     patientId: Optional[str] = None
+    token: Optional[str] = None
 
 class ChatResponse(BaseModel):
     response: str
 
 @app.post("/api/chat", response_model=ChatResponse)
-async def chat(request: ChatRequest):
+async def chat(request: ChatRequest, authorization: Optional[str] = Header(None)):
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise HTTPException(
@@ -465,6 +627,27 @@ async def chat(request: ChatRequest):
         )
     
     try:
+        patient_id = None
+        jwt_secret = os.getenv("JWT_SECRET", "secretkey")
+        
+        token = None
+        if authorization and authorization.startswith("Bearer "):
+            token = authorization.split(" ")[1]
+        elif request.token:
+            token = request.token
+            
+        if token:
+            try:
+                decoded = jwt.decode(token, jwt_secret, algorithms=["HS256"])
+                patient_id = decoded.get("id")
+                role = decoded.get("role")
+                if role != "patient":
+                    raise HTTPException(status_code=403, detail="Access denied. Patient role required for this assistant.")
+            except jwt.ExpiredSignatureError:
+                raise HTTPException(status_code=401, detail="Session expired. Please log in again.")
+            except jwt.InvalidTokenError:
+                raise HTTPException(status_code=401, detail="Invalid session token. Please log in again.")
+
         llm = ChatGoogleGenerativeAI(
             model="gemini-3.5-flash",
             google_api_key=api_key,
@@ -475,11 +658,11 @@ async def chat(request: ChatRequest):
         current_date = datetime.date.today().strftime("%Y-%m-%d")
         custom_prompt = SYSTEM_PROMPT + f"\nToday's date is: {current_date}.\n"
         
-        if request.patientId:
-            custom_prompt += f"The current logged-in patient's ID is: {request.patientId}.\n"
+        if patient_id:
+            custom_prompt += f"The current logged-in patient's ID is: {patient_id}.\n"
             try:
                 # Look up patient name to personalize
-                p_doc = db["patients"].find_one({"_id": ObjectId(request.patientId)})
+                p_doc = db["patients"].find_one({"_id": ObjectId(patient_id)})
                 if p_doc:
                     custom_prompt += f"The patient's name is: {p_doc.get('name')}.\n"
             except Exception:
@@ -551,6 +734,8 @@ async def chat(request: ChatRequest):
             return ChatResponse(response="CareFlow AI is currently experiencing a high volume of requests. Please wait a few seconds and try sending your message again.")
         elif "UNAVAILABLE" in err_msg or "503" in err_msg:
             return ChatResponse(response="CareFlow AI is currently experiencing high demand or temporary server status issues. Please try again in a moment.")
+        if isinstance(e, HTTPException):
+            raise e
         raise HTTPException(status_code=500, detail=f"Error processing message: {str(e)}")
 
 @app.get("/health")

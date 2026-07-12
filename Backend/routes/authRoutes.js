@@ -6,7 +6,7 @@ import {
   verifyEmailOtp,
   getname,
   toggleAvailability,
-  
+  logout,
 } from "../controllers/authController.js";
 
 const router = express.Router();
@@ -16,7 +16,8 @@ router.post("/login-password", loginPassword);
 router.post("/send-email-otp", sendEmailOtp);
 router.post("/verify-email-otp", verifyEmailOtp);
 router.post("/getname", getname);
-router.patch("/:id/availability",  toggleAvailability);
+router.patch("/:id/availability", toggleAvailability);
+router.post("/logout", logout);
 
 // router.post("/bookappointment",bookAppointment)
 
